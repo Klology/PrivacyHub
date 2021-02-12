@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrivacyHub"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Background="#FF292B2E" Foreground="White">
     <Grid>
-        
+        <ListBox HorizontalAlignment="Left" Height="348" Margin="32,51,0,0" VerticalAlignment="Top" Width="216" x:Name="DeviceID_LB"/>
+        <ListBox HorizontalAlignment="Left" Height="348" Margin="253,51,0,0" VerticalAlignment="Top" Width="216" x:Name="PNPDeviceID_LB"/>
+        <ListBox HorizontalAlignment="Left" Height="348" Margin="474,51,0,0" VerticalAlignment="Top" Width="216" x:Name="DeviceDescription_LB"/>
+
     </Grid>
 </Window>
