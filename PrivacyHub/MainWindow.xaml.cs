@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace PrivacyHub
 {
@@ -26,17 +27,30 @@ namespace PrivacyHub
             InitializeComponent();
 
             ManagementObjectCollection collection;
-            using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBHub"))
+            using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
                 collection = searcher.Get();
 
             foreach(var device in collection) {
-                DeviceID_LB.Items.Add(device.GetPropertyValue("DeviceID"));
-                PNPDeviceID_LB.Items.Add(device.GetPropertyValue("PNPDeviceID"));
-                DeviceDescription_LB.Items.Add(device.GetPropertyValue("Description"));
+                string curDeviceInfo = (string)device.GetPropertyValue("Dependent");
+                string usbAddress = (curDeviceInfo.Split(new String[] { "DeviceID=" }, 2, StringSplitOptions.None)[1]);
+
+                ManagementObjectCollection devices;
+                using (var searcher = new ManagementObjectSearcher("Select * from Win32_PnPEntity where PNPDeviceID = " + usbAddress))
+                    devices = searcher.Get();
+
+                foreach(var usbDevice in devices) {
+                    Console.WriteLine("----------------DEVICE---------------");
+                    foreach(var property in usbDevice.Properties)
+                        Console.WriteLine(property.Name + ": " + property.Value);
+                    Console.WriteLine("----------------END---------------");
+                }
+
+                devices.Dispose();
             }
 
+            
             collection.Dispose();
-
+            
         }
     }
 }
