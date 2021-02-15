@@ -39,10 +39,8 @@ namespace PrivacyHub
                     devices = searcher.Get();
 
                 foreach(var usbDevice in devices) {
-                    Console.WriteLine("----------------DEVICE---------------");
-                    foreach(var property in usbDevice.Properties)
-                        Console.WriteLine(property.Name + ": " + property.Value);
-                    Console.WriteLine("----------------END---------------");
+                   Device newDevice = new Device(usbDevice);
+                   System.Diagnostics.Debug.WriteLine(newDevice.toString());
                 }
 
                 devices.Dispose();
