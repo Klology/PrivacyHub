@@ -103,7 +103,11 @@ namespace PrivacyHub
 				//Cycles through properties of usbDevice and stores values in a list. If an exception occurs, the item in list is set as null
 				try
 				{
-					deviceProperties.Add(property.Value.ToString());
+                    if (property.Value != null) {
+						deviceProperties.Add(property.Value.ToString());
+					} else {
+						deviceProperties.Add(null);
+					}
 				}
 				catch(Exception e)
                 {

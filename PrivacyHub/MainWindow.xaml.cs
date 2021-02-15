@@ -39,8 +39,12 @@ namespace PrivacyHub
                     devices = searcher.Get();
 
                 foreach(var usbDevice in devices) {
-                   Device newDevice = new Device(usbDevice);
-                   System.Diagnostics.Debug.WriteLine(newDevice.toString());
+                    String pnpClass = usbDevice.GetPropertyValue("PNPClass").ToString();
+                    if (pnpClass.Equals("AudioEndpoint") || pnpClass.Equals("MEDIA") || pnpClass.Equals("Image") || pnpClass.Equals("Camera")) {
+
+                        Device newDevice = new Device(usbDevice);
+                        System.Diagnostics.Debug.WriteLine(newDevice.toString());
+                    }
                 }
 
                 devices.Dispose();
