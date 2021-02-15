@@ -60,39 +60,6 @@ namespace PrivacyHub
 		public string SystemCreationClassName { get; }
 		public string SystemName { get; }
 
-		
-
-		//default constructor
-		public Device()
-		{
-			availability = "";
-			caption = "";
-			classGuid = "";
-			compatibleID = "";
-			configManagerErrorCode = "";
-			configManagerUserConfig = "";
-			creationClassName = "";
-			description = "";
-			deviceID = "";
-			errorCleared = "";
-			errorDescription = "";
-			hardwareID = "";
-			installDate = "";
-			lastErrorCode = "";
-			manufacturer = "";
-			name = "";
-			pNPClass = "";
-			pNPDeviceID = "";
-			powerManagementCapabilities = "";
-			powerManagementSupported = "";
-			present = "";
-			service = "";
-			status = "";
-			statusInfo = "";
-			systemCreationClassName = "";
-			systemName = "";
-		}
-
 		//parameterized constructor. Takes managementBaseObject
 		public Device(System.Management.ManagementBaseObject usbDevice)
 		{
