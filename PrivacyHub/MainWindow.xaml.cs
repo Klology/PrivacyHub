@@ -48,9 +48,12 @@ namespace PrivacyHub
                 }
 
                 devices.Dispose();
+
             }
 
-            
+            SystemProcesses systemProcesses = new SystemProcesses();
+            systemProcesses.BindToRunningProcesses();
+
             collection.Dispose();
             
         }

@@ -67,6 +67,9 @@ namespace PrivacyHub
 
 			foreach (var property in usbDevice.Properties)
 			{
+
+				System.Diagnostics.Debug.WriteLine("Test to see CompatibleID string: " + usbDevice.GetPropertyValue("CompatibleID").ToString());
+
 				//Cycles through properties of usbDevice and stores values in a list. If an exception occurs, the item in list is set as null
 				try
 				{
