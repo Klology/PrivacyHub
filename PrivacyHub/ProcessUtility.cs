@@ -105,7 +105,7 @@ public class ProcessUtility
     private const int CNST_SYSTEM_HANDLE_INFORMATION = 0x10;
     private const int OBJECT_TYPE_FILE = 0x24;
 
-    public static List<string> FindFilesByExtension(List<Process> target_processes, List<string> target_extensions)
+    public List<string> FindFilesByExtension(List<Process> target_processes, List<string> target_extensions)
     {
         List<string> aFilePaths = new List<string>();
         if (target_extensions == null || target_extensions.Count == 0)
@@ -127,7 +127,7 @@ public class ProcessUtility
         return aFilePaths;
     }
 
-    public static List<string> GetPrcessFiles(List<Process> target_processes)
+    public List<string> GetPrcessFiles(List<Process> target_processes)
     {
         List<string> aFiles = new List<string>();
         foreach (Process process in target_processes)
