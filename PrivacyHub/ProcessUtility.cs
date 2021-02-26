@@ -130,22 +130,26 @@ public class ProcessUtility
     public List<string> GetPrcessFiles(List<Process> target_processes)
     {
         List<string> aFiles = new List<string>();
+        int count = 0;
+        List<SYSTEM_HANDLE_INFORMATION> aHandles = GetFileHandles().ToList();
         foreach (Process process in target_processes)
         {
-            List<SYSTEM_HANDLE_INFORMATION> aHandles = GetFileHandles(process).ToList();
+            Console.WriteLine(process.ProcessName);
+            if(process.ProcessName.Equals("NVIDIA RTX Voice"))
             foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
             {
-                string file_path = GetFilePath(handle_info, process);
+                string file_path = GetFilePath(handle_info, process, count, target_processes.Count);
                 if (!string.IsNullOrEmpty(file_path))
                 {
                     aFiles.Add(file_path);
                 }
             }
+            count++;
         }
         return aFiles;
     }
 
-    private static IEnumerable<SYSTEM_HANDLE_INFORMATION> GetFileHandles(Process process)
+    private static IEnumerable<SYSTEM_HANDLE_INFORMATION> GetFileHandles()
     {
         List<SYSTEM_HANDLE_INFORMATION> aHandles = new List<SYSTEM_HANDLE_INFORMATION>();
         int handle_info_size = Marshal.SizeOf(new SYSTEM_HANDLE_INFORMATION()) * 20000;
@@ -169,7 +173,7 @@ public class ProcessUtility
             {
                 SYSTEM_HANDLE_INFORMATION oSystemHandleInfo = Marshal.PtrToStructure<SYSTEM_HANDLE_INFORMATION>(ptrHandleItem);
                 ptrHandleItem += Marshal.SizeOf(new SYSTEM_HANDLE_INFORMATION());
-                if (oSystemHandleInfo.ProcessID != process.Id || oSystemHandleInfo.ObjectType != OBJECT_TYPE_FILE)
+                if (oSystemHandleInfo.ProcessID != //Put whatever process Id you want here)
                 { continue; }
 
                 aHandles.Add(oSystemHandleInfo);
@@ -186,7 +190,7 @@ public class ProcessUtility
         return aHandles;
     }
 
-    private static string GetFilePath(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process)
+    private static string GetFilePath(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
     {
         IntPtr ipHandle = IntPtr.Zero;
         IntPtr openProcessHandle = IntPtr.Zero;
@@ -200,8 +204,6 @@ public class ProcessUtility
                 return null;
             }
 
-            if (GetFileType(ipHandle) != FileType.FileTypeDisk)
-            { return null; }
 
             int nLength = 0;
             hObjectName = Marshal.AllocHGlobal(256 * 1024);
@@ -221,7 +223,10 @@ public class ProcessUtility
             if (objObjectName.Name.Buffer != IntPtr.Zero)
             {
                 string strObjectName = Marshal.PtrToStringUni(objObjectName.Name.Buffer);
-                return GetRegularFileNameFromDevice(strObjectName);
+                if (strObjectName.ToLower().Contains("{1F4B9709-47AC-4E25-A247-E6466E076D7C}"/*replace with proper device id*/.ToLower()))
+                    return GetRegularFileNameFromDevice(strObjectName);
+                Console.WriteLine("(" + count + " / " + handleCount + "): " + strObjectName);
+                return null;
             }
         }
         catch (Exception ex)

@@ -25,9 +25,9 @@ namespace PrivacyHub
     {
         public MainWindow()
         {
-            InitializeComponent();
+            /*InitializeComponent();
 
-            /*ManagementObjectCollection collection;
+            ManagementObjectCollection collection;
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
                 collection = searcher.Get();
 
@@ -55,8 +55,8 @@ namespace PrivacyHub
             SystemProcesses systemProcesses = new SystemProcesses();
             systemProcesses.BindToRunningProcesses();
 
-            collection.Dispose();*/
-
+            collection.Dispose();
+            */
             ProcessUtility processUtility = new ProcessUtility();
             
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
@@ -64,7 +64,7 @@ namespace PrivacyHub
             List<String> processFiles = processUtility.GetPrcessFiles(processList);
 
             Console.WriteLine(processFiles[0]);
-
+            
         }
     }
 }
