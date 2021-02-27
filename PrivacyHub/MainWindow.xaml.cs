@@ -61,7 +61,7 @@ namespace PrivacyHub
             
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
 
-            List<String> processFiles = processUtility.GetPrcessFiles(processList);
+            List<String> processFiles = processUtility.GetProcessHandles(processList);
 
             Console.WriteLine(processFiles[0]);
             

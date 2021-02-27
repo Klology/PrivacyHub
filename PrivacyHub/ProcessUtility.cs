@@ -105,40 +105,23 @@ public class ProcessUtility
     private const int CNST_SYSTEM_HANDLE_INFORMATION = 0x10;
     private const int OBJECT_TYPE_FILE = 0x24;
 
-    public List<string> FindFilesByExtension(List<Process> target_processes, List<string> target_extensions)
-    {
-        List<string> aFilePaths = new List<string>();
-        if (target_extensions == null || target_extensions.Count == 0)
-        {
-            throw new Exception("Exceptions not defined");
-        }
-        foreach (Process process in target_processes)
-        {
-            List<string> aProcessFiles = GetPrcessFiles(target_processes);
-            foreach (string file_path in aProcessFiles)
-            {
-                if (target_extensions.Contains(Path.GetExtension(file_path.ToLower()))
-                    && !Path.GetFileName(file_path).StartsWith("~"))
-                {
-                    aFilePaths.Add(file_path);
-                }
-            }
-        }
-        return aFilePaths;
-    }
-
-    public List<string> GetPrcessFiles(List<Process> target_processes)
+    public List<string> GetProcessHandles(List<Process> target_processes)
     {
         List<string> aFiles = new List<string>();
         int count = 0;
-        List<SYSTEM_HANDLE_INFORMATION> aHandles = GetFileHandles().ToList();
+        
+        //This gets a list of all the handels for the system
+        List<SYSTEM_HANDLE_INFORMATION> aHandles = GetHandles().ToList();
+
         foreach (Process process in target_processes)
         {
             Console.WriteLine(process.ProcessName);
-            if(process.ProcessName.Equals("NVIDIA RTX Voice"))
+            //Only worry about this if you want to check for a specific process's handles     //if(process.ProcessName.Equals("NVIDIA RTX Voice"))
+            
+            //Go through all the handles
             foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
             {
-                string file_path = GetFilePath(handle_info, process, count, target_processes.Count);
+                string file_path = GetHandleName(handle_info, process, count, target_processes.Count);
                 if (!string.IsNullOrEmpty(file_path))
                 {
                     aFiles.Add(file_path);
@@ -149,16 +132,17 @@ public class ProcessUtility
         return aFiles;
     }
 
-    private static IEnumerable<SYSTEM_HANDLE_INFORMATION> GetFileHandles()
+    private static IEnumerable<SYSTEM_HANDLE_INFORMATION> GetHandles()
     {
         List<SYSTEM_HANDLE_INFORMATION> aHandles = new List<SYSTEM_HANDLE_INFORMATION>();
-        int handle_info_size = Marshal.SizeOf(new SYSTEM_HANDLE_INFORMATION()) * 20000;
+        int handle_info_size = Marshal.SizeOf(new SYSTEM_HANDLE_INFORMATION()) * 20000; //Allocate enough memory to hold 200000 handles
         IntPtr ptrHandleData = IntPtr.Zero;
         try
         {
             ptrHandleData = Marshal.AllocHGlobal(handle_info_size);
             int nLength = 0;
 
+            //Keep testing handle info lengths until you find out how much memory to allocate to hold all handles
             while (NtQuerySystemInformation(CNST_SYSTEM_HANDLE_INFORMATION, ptrHandleData, handle_info_size, ref nLength) == STATUS_INFO_LENGTH_MISMATCH)
             {
                 handle_info_size = nLength;
@@ -166,16 +150,22 @@ public class ProcessUtility
                 ptrHandleData = Marshal.AllocHGlobal(nLength);
             }
 
+            //Now that we know how much data to store, actually store the data
             long handle_count = Marshal.ReadIntPtr(ptrHandleData).ToInt64();
             IntPtr ptrHandleItem = ptrHandleData + Marshal.SizeOf(ptrHandleData);
 
+            //Go through all the handles to extract individual information for each
             for (long lIndex = 0; lIndex < handle_count; lIndex++)
             {
+                //Put the information for a handle into the struct SYSTEM_HANDLE_INFORMATION
                 SYSTEM_HANDLE_INFORMATION oSystemHandleInfo = Marshal.PtrToStructure<SYSTEM_HANDLE_INFORMATION>(ptrHandleItem);
-                ptrHandleItem += Marshal.SizeOf(new SYSTEM_HANDLE_INFORMATION());
-                if (oSystemHandleInfo.ProcessID != //Put whatever process Id you want here)
-                { continue; }
 
+                //Move to next handle
+                ptrHandleItem += Marshal.SizeOf(new SYSTEM_HANDLE_INFORMATION());
+                
+                //Only care about this if you want to filter handles releveant to a specific process ID //if (oSystemHandleInfo.ProcessID != 8988) { continue; }
+
+                //Add the handle info to the list of handles
                 aHandles.Add(oSystemHandleInfo);
             }
         }
@@ -185,20 +175,24 @@ public class ProcessUtility
         }
         finally
         {
+            //Avoid memory leaks by freeing up managed memory
             Marshal.FreeHGlobal(ptrHandleData);
         }
         return aHandles;
     }
 
-    private static string GetFilePath(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
+    private static string GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
     {
         IntPtr ipHandle = IntPtr.Zero;
         IntPtr openProcessHandle = IntPtr.Zero;
         IntPtr hObjectName = IntPtr.Zero;
         try
         {
-            PROCESS_ACCESS_FLAGS flags = PROCESS_ACCESS_FLAGS.DupHandle | PROCESS_ACCESS_FLAGS.VMRead;
+            //Set up flags for and then get a process handle for the current process being checked
+            PROCESS_ACCESS_FLAGS flags = PROCESS_ACCESS_FLAGS.DupHandle | PROCESS_ACCESS_FLAGS.VMRead;  
             openProcessHandle = OpenProcess(flags, false, process.Id);
+
+            //Duplicate the process handle into ipHandle, if this failes return null
             if (!DuplicateHandle(openProcessHandle, new IntPtr(systemHandleInformation.Handle), GetCurrentProcess(), out ipHandle, 0, false, DUPLICATE_SAME_ACCESS))
             {
                 return null;
@@ -206,8 +200,9 @@ public class ProcessUtility
 
 
             int nLength = 0;
-            hObjectName = Marshal.AllocHGlobal(256 * 1024);
+            hObjectName = Marshal.AllocHGlobal(256 * 1024); //Allocate memory for a max length handle name
 
+            //Try to find out exactly how long the object name is, then once you've allocated the proper amount of memory, copy it into hObjectName
             while ((uint)(NtQueryObject(ipHandle, (int)OBJECT_INFORMATION_CLASS.ObjectNameInformation, hObjectName, nLength, ref nLength)) == STATUS_INFO_LENGTH_MISMATCH)
             {
                 Marshal.FreeHGlobal(hObjectName);
@@ -218,13 +213,20 @@ public class ProcessUtility
                 }
                 hObjectName = Marshal.AllocHGlobal(nLength);
             }
+            //Move the infromation in hObjectName to an easier to use structure OBJECT_NAME_INFORMATION
             OBJECT_NAME_INFORMATION objObjectName = Marshal.PtrToStructure<OBJECT_NAME_INFORMATION>(hObjectName);
 
+            //Check if we have a proper name
             if (objObjectName.Name.Buffer != IntPtr.Zero)
             {
+                //Convert objObjectName to a normal string, this is the handle's name
                 string strObjectName = Marshal.PtrToStringUni(objObjectName.Name.Buffer);
-                if (strObjectName.ToLower().Contains("{1F4B9709-47AC-4E25-A247-E6466E076D7C}"/*replace with proper device id*/.ToLower()))
-                    return GetRegularFileNameFromDevice(strObjectName);
+
+                //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
+                if (strObjectName.ToLower().Contains("{1F4B9709-47AC-4E25-A247-E6466E076D7C}".ToLower())//Put a proper device ID here)
+                    return strObjectName;
+
+                //If it doesnt, return null
                 Console.WriteLine("(" + count + " / " + handleCount + "): " + strObjectName);
                 return null;
             }
@@ -235,31 +237,13 @@ public class ProcessUtility
         }
         finally
         {
+
+            //Clean up managed memory
             Marshal.FreeHGlobal(hObjectName);
 
             CloseHandle(ipHandle);
             CloseHandle(openProcessHandle);
         }
         return null;
-    }
-
-    private static string GetRegularFileNameFromDevice(string strRawName)
-    {
-        string strFileName = strRawName;
-        foreach (string strDrivePath in Environment.GetLogicalDrives())
-        {
-            var sbTargetPath = new StringBuilder(MAX_PATH);
-            if (QueryDosDevice(strDrivePath.Substring(0, 2), sbTargetPath, MAX_PATH) == 0)
-            {
-                return strRawName;
-            }
-            string strTargetPath = sbTargetPath.ToString();
-            if (strFileName.StartsWith(strTargetPath))
-            {
-                strFileName = strFileName.Replace(strTargetPath, strDrivePath.Substring(0, 2));
-                break;
-            }
-        }
-        return strFileName;
     }
 }
