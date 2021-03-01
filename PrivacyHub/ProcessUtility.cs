@@ -223,7 +223,7 @@ public class ProcessUtility
                 string strObjectName = Marshal.PtrToStringUni(objObjectName.Name.Buffer);
 
                 //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
-                if (strObjectName.ToLower().Contains("{1F4B9709-47AC-4E25-A247-E6466E076D7C}".ToLower()))//Put a proper device ID here)
+                if (strObjectName.ToLower().Contains("{1F4B9709-47AC-4E25-A247-E6466E076D7C}".ToLower())//Put a proper device ID here)
                     return strObjectName;
 
                 //If it doesnt, return null
