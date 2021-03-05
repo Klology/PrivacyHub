@@ -68,12 +68,11 @@ namespace PrivacyHub
             
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
 
-            foreach (string deviceID in searchableSubstrings)
-            {
-                List<String> processFiles = processUtility.GetProcessHandles(processList, deviceID);
+            List<ProcessUtility.ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
 
-                Console.WriteLine(processFiles[0]);
-            }
+            Console.Write("Process name: " + processFiles[0].processName + " Devices: ");
+            foreach (string device in processFiles[0].devices)
+                Console.Write(device);
 
         }
     }

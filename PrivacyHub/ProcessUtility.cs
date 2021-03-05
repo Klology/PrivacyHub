@@ -105,11 +105,27 @@ public class ProcessUtility
     private const int CNST_SYSTEM_HANDLE_INFORMATION = 0x10;
     private const int OBJECT_TYPE_FILE = 0x24;
 
-    public List<string> GetProcessHandles(List<Process> target_processes, string deviceID)
+    private static List<string> searchableSubstring = new List<string>();
+
+    public struct ProcessAndDevices
     {
-        List<string> aFiles = new List<string>();
+        public string processName;
+        public List<string> devices;
+
+        public ProcessAndDevices(string processName, List<string> devices)
+        {
+            this.processName = processName;
+            this.devices = devices;
+        }
+    }
+
+    public List<ProcessAndDevices> GetProcessHandles(List<Process> target_processes, List<string> searchableSubstrings)
+    {
+        List<ProcessAndDevices> processNameAndDevices = new List<ProcessAndDevices>();
         int count = 0;
-        
+
+        searchableSubstring = searchableSubstrings;
+
         //This gets a list of all the handels for the system
         List<SYSTEM_HANDLE_INFORMATION> aHandles = GetHandles().ToList();
 
@@ -117,21 +133,22 @@ public class ProcessUtility
         {
             Console.WriteLine(process.ProcessName);
             //Only worry about this if you want to check for a specific process's handles     //
-            if (process.ProcessName.Equals("Spotify"))
+            if (!process.ProcessName.Equals("svchost"))
             {
                 //Go through all the handles
                 foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
                 {
-                    string file_path = GetHandleName(handle_info, process, count, target_processes.Count, deviceID);
-                    if (!string.IsNullOrEmpty(file_path))
+                    ProcessAndDevices processAndDevices = new ProcessAndDevices();
+                    processAndDevices = GetHandleName(handle_info, process, count, target_processes.Count);
+                    if (!string.IsNullOrEmpty(processAndDevices.processName))
                     {
-                        aFiles.Add(file_path);
+                        processNameAndDevices.Add(processAndDevices);
                     }
                 }
             }
             count++;
         }
-        return aFiles;
+        return processNameAndDevices;
     }
 
     private static IEnumerable<SYSTEM_HANDLE_INFORMATION> GetHandles()
@@ -183,7 +200,7 @@ public class ProcessUtility
         return aHandles;
     }
 
-    private static string GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount, string deviceID)
+    private static ProcessAndDevices GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
     {
         IntPtr ipHandle = IntPtr.Zero;
         IntPtr openProcessHandle = IntPtr.Zero;
@@ -194,10 +211,11 @@ public class ProcessUtility
             PROCESS_ACCESS_FLAGS flags = PROCESS_ACCESS_FLAGS.DupHandle | PROCESS_ACCESS_FLAGS.VMRead;  
             openProcessHandle = OpenProcess(flags, false, process.Id);
 
-            //Duplicate the process handle into ipHandle, if this failes return null
+            //Duplicate the process handle into ipHandle, if this fails return null
             if (!DuplicateHandle(openProcessHandle, new IntPtr(systemHandleInformation.Handle), GetCurrentProcess(), out ipHandle, 0, false, DUPLICATE_SAME_ACCESS))
             {
-                return null;
+                ProcessAndDevices failedProcessAndDevices = new ProcessAndDevices();
+                return failedProcessAndDevices;
             }
 
 
@@ -211,7 +229,8 @@ public class ProcessUtility
                 if (nLength == 0)
                 {
                     Console.WriteLine("Length returned at zero!");
-                    return null;
+                    ProcessAndDevices failedProcessAndDevices = new ProcessAndDevices();
+                    return failedProcessAndDevices;
                 }
                 hObjectName = Marshal.AllocHGlobal(nLength);
             }
@@ -224,13 +243,32 @@ public class ProcessUtility
                 //Convert objObjectName to a normal string, this is the handle's name
                 string strObjectName = Marshal.PtrToStringUni(objObjectName.Name.Buffer);
 
-                //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
-                if (strObjectName.ToLower().Contains(deviceID.ToLower()))
-                    return strObjectName;
+                bool deviceIDFound = false;
+                List<string> idsFound = new List<string>();
 
-                //If it doesnt, return null
-                Console.WriteLine("(" + count + " / " + handleCount + "): " + strObjectName);
-                return null;
+                //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
+                foreach(string deviceID in searchableSubstring)
+                {
+                    if (strObjectName.ToLower().Contains(deviceID.ToLower()))
+                    {
+                        idsFound.Add(deviceID);
+                        deviceIDFound = true;
+                    }
+                }
+                
+                if(deviceIDFound)
+                {
+                    ProcessAndDevices processAndDevices = new ProcessAndDevices(strObjectName, idsFound);
+                    return processAndDevices;
+                }
+                else
+                {
+                    //If it doesnt, return null
+                    Console.WriteLine("(" + count + " / " + handleCount + "): " + strObjectName);
+                    ProcessAndDevices processAndDevices = new ProcessAndDevices();
+                    return processAndDevices;
+                }
+                
             }
         }
         catch (Exception ex)
@@ -246,6 +284,7 @@ public class ProcessUtility
             CloseHandle(ipHandle);
             CloseHandle(openProcessHandle);
         }
-        return null;
+        ProcessAndDevices failProcessAndDevices = new ProcessAndDevices();
+        return failProcessAndDevices;
     }
 }
