@@ -116,15 +116,17 @@ public class ProcessUtility
         foreach (Process process in target_processes)
         {
             Console.WriteLine(process.ProcessName);
-            //Only worry about this if you want to check for a specific process's handles     //if(process.ProcessName.Equals("NVIDIA RTX Voice"))
-            
-            //Go through all the handles
-            foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
+            //Only worry about this if you want to check for a specific process's handles     //
+            if (process.ProcessName.Equals("Spotify"))
             {
-                string file_path = GetHandleName(handle_info, process, count, target_processes.Count);
-                if (!string.IsNullOrEmpty(file_path))
+                //Go through all the handles
+                foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
                 {
-                    aFiles.Add(file_path);
+                    string file_path = GetHandleName(handle_info, process, count, target_processes.Count);
+                    if (!string.IsNullOrEmpty(file_path))
+                    {
+                        aFiles.Add(file_path);
+                    }
                 }
             }
             count++;
@@ -223,7 +225,7 @@ public class ProcessUtility
                 string strObjectName = Marshal.PtrToStringUni(objObjectName.Name.Buffer);
 
                 //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
-                if (strObjectName.ToLower().Contains("{1F4B9709-47AC-4E25-A247-E6466E076D7C}".ToLower())//Put a proper device ID here)
+                if (strObjectName.ToLower().Contains("{48D2B14B-EA04-4E85-A03A-239EFDCAB751}".ToLower()))//Put a proper device ID here
                     return strObjectName;
 
                 //If it doesnt, return null

@@ -32,6 +32,7 @@ namespace PrivacyHub
 		private string statusInfo;
 		private string systemCreationClassName;
 		private string systemName;
+		private string pNPDeviceIDSubstring;
 
 		public string Availability { get; }
 		public string Caption { get; }
@@ -59,6 +60,7 @@ namespace PrivacyHub
 		public string StatusInfo { get; }
 		public string SystemCreationClassName { get; }
 		public string SystemName { get; }
+		public string PNPDeviceIDSubstring { get; }
 
 		//parameterized constructor. Takes managementBaseObject
 		public Device(System.Management.ManagementBaseObject usbDevice)
@@ -116,7 +118,9 @@ namespace PrivacyHub
 			statusInfo = deviceProperties[23];
 			systemCreationClassName = deviceProperties[24];
 			systemName = deviceProperties[25];
-			
+
+			AuthenticateSubstring();
+
 		}
 
 		public string toString()
@@ -148,7 +152,42 @@ namespace PrivacyHub
 					"\nStatusInfo: " + statusInfo +
 					"\nSystemCreationClassName: " + systemCreationClassName +
 					"\nSystemName: " + systemName +
+					"\nPNPDeviceIDSubstring: " + pNPDeviceIDSubstring +
 					"\n----------------END---------------");
 		}
+
+		//determines if the device has a proper PNPDeviceID that we can extract a searchable substring from
+		public void AuthenticateSubstring()
+        {
+			char[] charArrayID = pNPDeviceID.ToCharArray();
+			int numBraces = 0;
+			List<char> pnpSubstring = new List<char>();
+
+			for(int i = 0; i < pNPDeviceID.Length; i++)	
+            {
+				if(charArrayID[i] == '{')	//searching for '{' to indicate if PNPDeviceID is in proper form. We need the second occurence of '{'
+                {
+					numBraces++;
+
+					if (numBraces == 2)		//We are at the second occurence of '{'
+					{
+						int j = 0;
+						while (charArrayID[i] != '}')  //add elements of substring to a list until we've reached the end of the substring
+						{
+							pnpSubstring.Add(charArrayID[i]);
+							i++;
+						}
+
+						pnpSubstring.Add('}');
+
+						//convert list form of substring into proper string. Print toString of Device
+						string temp = new string(pnpSubstring.ToArray());
+						pNPDeviceIDSubstring = temp;
+						System.Diagnostics.Debug.WriteLine(toString());
+                    }
+
+                }
+            }
+        }
 	}
 }

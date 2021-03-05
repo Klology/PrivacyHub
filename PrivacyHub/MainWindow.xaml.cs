@@ -25,7 +25,7 @@ namespace PrivacyHub
     {
         public MainWindow()
         {
-            /*InitializeComponent();
+            InitializeComponent();
 
             ManagementObjectCollection collection;
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
@@ -44,7 +44,6 @@ namespace PrivacyHub
                     if (pnpClass.Equals("AudioEndpoint") || pnpClass.Equals("MEDIA") || pnpClass.Equals("Image") || pnpClass.Equals("Camera")) {
 
                         Device newDevice = new Device(usbDevice);
-                        System.Diagnostics.Debug.WriteLine(newDevice.toString());
                     }
                 }
 
@@ -56,7 +55,7 @@ namespace PrivacyHub
             systemProcesses.BindToRunningProcesses();
 
             collection.Dispose();
-            */
+            
             ProcessUtility processUtility = new ProcessUtility();
             
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
