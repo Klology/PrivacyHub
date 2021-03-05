@@ -33,6 +33,7 @@ namespace PrivacyHub
 		private string systemCreationClassName;
 		private string systemName;
 		private string pNPDeviceIDSubstring;
+		private bool hasSearchableSubstring;
 
 		public string Availability { get; }
 		public string Caption { get; }
@@ -60,7 +61,8 @@ namespace PrivacyHub
 		public string StatusInfo { get; }
 		public string SystemCreationClassName { get; }
 		public string SystemName { get; }
-		public string PNPDeviceIDSubstring { get; }
+		public string PNPDeviceIDSubstring { get { return pNPDeviceIDSubstring; } }
+		public bool HasSearchableSubstring { get { return hasSearchableSubstring; } }
 
 		//parameterized constructor. Takes managementBaseObject
 		public Device(System.Management.ManagementBaseObject usbDevice)
@@ -119,7 +121,7 @@ namespace PrivacyHub
 			systemCreationClassName = deviceProperties[24];
 			systemName = deviceProperties[25];
 
-			AuthenticateSubstring();
+			hasSearchableSubstring = AuthenticateSubstring();
 
 		}
 
@@ -157,7 +159,7 @@ namespace PrivacyHub
 		}
 
 		//determines if the device has a proper PNPDeviceID that we can extract a searchable substring from
-		public void AuthenticateSubstring()
+		public bool AuthenticateSubstring()
         {
 			char[] charArrayID = pNPDeviceID.ToCharArray();
 			int numBraces = 0;
@@ -184,10 +186,13 @@ namespace PrivacyHub
 						string temp = new string(pnpSubstring.ToArray());
 						pNPDeviceIDSubstring = temp;
 						System.Diagnostics.Debug.WriteLine(toString());
+						return true;
                     }
 
                 }
             }
+
+			return false;
         }
 	}
 }

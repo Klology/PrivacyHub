@@ -105,7 +105,7 @@ public class ProcessUtility
     private const int CNST_SYSTEM_HANDLE_INFORMATION = 0x10;
     private const int OBJECT_TYPE_FILE = 0x24;
 
-    public List<string> GetProcessHandles(List<Process> target_processes)
+    public List<string> GetProcessHandles(List<Process> target_processes, string deviceID)
     {
         List<string> aFiles = new List<string>();
         int count = 0;
@@ -122,7 +122,7 @@ public class ProcessUtility
                 //Go through all the handles
                 foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
                 {
-                    string file_path = GetHandleName(handle_info, process, count, target_processes.Count);
+                    string file_path = GetHandleName(handle_info, process, count, target_processes.Count, deviceID);
                     if (!string.IsNullOrEmpty(file_path))
                     {
                         aFiles.Add(file_path);
@@ -183,7 +183,7 @@ public class ProcessUtility
         return aHandles;
     }
 
-    private static string GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
+    private static string GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount, string deviceID)
     {
         IntPtr ipHandle = IntPtr.Zero;
         IntPtr openProcessHandle = IntPtr.Zero;
@@ -225,7 +225,7 @@ public class ProcessUtility
                 string strObjectName = Marshal.PtrToStringUni(objObjectName.Name.Buffer);
 
                 //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
-                if (strObjectName.ToLower().Contains("{48D2B14B-EA04-4E85-A03A-239EFDCAB751}".ToLower())//Put a proper device ID here)
+                if (strObjectName.ToLower().Contains(deviceID.ToLower()))
                     return strObjectName;
 
                 //If it doesnt, return null

@@ -31,6 +31,8 @@ namespace PrivacyHub
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
                 collection = searcher.Get();
 
+            List<string> searchableSubstrings = new List<string>();
+
             foreach(var device in collection) {
                 string curDeviceInfo = (string)device.GetPropertyValue("Dependent");
                 string usbAddress = (curDeviceInfo.Split(new String[] { "DeviceID=" }, 2, StringSplitOptions.None)[1]);
@@ -44,6 +46,12 @@ namespace PrivacyHub
                     if (pnpClass.Equals("AudioEndpoint") || pnpClass.Equals("MEDIA") || pnpClass.Equals("Image") || pnpClass.Equals("Camera")) {
 
                         Device newDevice = new Device(usbDevice);
+
+                        if (newDevice.HasSearchableSubstring)
+                        {
+                            searchableSubstrings.Add(newDevice.PNPDeviceIDSubstring);
+                        }
+                            
                     }
                 }
 
@@ -60,10 +68,13 @@ namespace PrivacyHub
             
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
 
-            List<String> processFiles = processUtility.GetProcessHandles(processList);
+            foreach (string deviceID in searchableSubstrings)
+            {
+                List<String> processFiles = processUtility.GetProcessHandles(processList, deviceID);
 
-            Console.WriteLine(processFiles[0]);
-            
+                Console.WriteLine(processFiles[0]);
+            }
+
         }
     }
 }
