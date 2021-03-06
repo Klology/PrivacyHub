@@ -134,18 +134,25 @@ public class ProcessUtility
         foreach (Process process in target_processes)
         {
             Console.WriteLine(process.ProcessName);
+
             //Only worry about this if you want to check for a specific process's handles     //
             if (!process.ProcessName.Equals("scvhost"))
             {
+                ProcessAndDevices curProccessAndDevices = new ProcessAndDevices();
+                curProccessAndDevices.processName = process.ProcessName;
+                curProccessAndDevices.devices = new List<string>();
+
                 //Go through all the handles
                 foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
                 {
-                    ProcessAndDevices processAndDevices = new ProcessAndDevices();
-                    processAndDevices = GetHandleName(handle_info, process, count, target_processes.Count);
-                    if (!string.IsNullOrEmpty(processAndDevices.processName))
-                    {
-                        processNameAndDevices.Add(processAndDevices);
-                    }
+                    string deviceID = GetHandleName(handle_info, process, count, target_processes.Count);
+
+                    if (deviceID != null) curProccessAndDevices.devices.Add(deviceID);
+                    
+                }
+
+                if (curProccessAndDevices.devices.Count != 0) {
+                    processNameAndDevices.Add(curProccessAndDevices);
                 }
             }
             count++;
@@ -202,19 +209,20 @@ public class ProcessUtility
         return aHandles;
     }
 
-    private static ProcessAndDevices GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
+    private static string GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
     {
         IntPtr ipHandle = IntPtr.Zero;
         IntPtr openProcessHandle = IntPtr.Zero;
         IntPtr hObjectName = IntPtr.Zero;
 
+        string IDFound = null;
         Int32 accessMask = (Int32)systemHandleInformation.AccessMask;
 
         if (systemHandleInformation.ProcessID != process.Id ||
             accessMask == 0x0012019f ||
             accessMask == 0x001a019f ||
             accessMask == 0x00120189 ||
-            accessMask == 0x00100000)  return new ProcessAndDevices();
+            accessMask == 0x00100000)  return IDFound;
 
         try
         {
@@ -225,8 +233,7 @@ public class ProcessUtility
             //Duplicate the process handle into ipHandle, if this fails return null
             if (!DuplicateHandle(openProcessHandle, new IntPtr(systemHandleInformation.Handle), GetCurrentProcess(), out ipHandle, 0, false, DUPLICATE_SAME_ACCESS))
             {
-                ProcessAndDevices failedProcessAndDevices = new ProcessAndDevices();
-                return failedProcessAndDevices;
+                return IDFound;
             }
 
             int nLength = 0;
@@ -239,8 +246,7 @@ public class ProcessUtility
                 if (nLength == 0)
                 {
                     Console.WriteLine("Length returned at zero!");
-                    ProcessAndDevices failedProcessAndDevices = new ProcessAndDevices();
-                    return failedProcessAndDevices;
+                    return IDFound;
                 }
                 hObjectName = Marshal.AllocHGlobal(nLength);
             }
@@ -255,30 +261,28 @@ public class ProcessUtility
                 string strObjectName = Marshal.PtrToStringUni(objObjectName.Name.Buffer);
 
                 bool deviceIDFound = false;
-                List<string> idsFound = new List<string>();
+                
 
                 //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
                 foreach(string deviceID in searchableSubstring)
                 {
                     if (strObjectName.ToLower().Contains(deviceID.ToLower()))
                     {
-                        idsFound.Add(deviceID);
+                        IDFound = deviceID;
                         deviceIDFound = true;
                     }
                 }
                 
                 if(deviceIDFound)
                 {
-                    ProcessAndDevices processAndDevices = new ProcessAndDevices(process.ProcessName, strObjectName, idsFound);
-                    Console.WriteLine("Handle matched!!!\n\n\nProcess Name: " + process.ProcessName + "strObjectName: " + strObjectName + "\nid: " + idsFound[0] + "\n\n\n");
-                    return processAndDevices;
+                    Console.WriteLine("Handle matched!!!\n\n\nProcess Name: " + process.ProcessName + "strObjectName: " + strObjectName + "\nid: " + IDFound + "\n\n\n");
+                    
                 }
                 else
                 {
                     //If it doesnt, return null
                     Console.WriteLine("(" + count + " / " + handleCount + "): " + strObjectName);
-                    ProcessAndDevices processAndDevices = new ProcessAndDevices();
-                    return processAndDevices;
+                   
                 }
                 
             }
@@ -296,7 +300,6 @@ public class ProcessUtility
             CloseHandle(ipHandle);
             CloseHandle(openProcessHandle);
         }
-        ProcessAndDevices failProcessAndDevices = new ProcessAndDevices();
-        return failProcessAndDevices;
+        return IDFound;
     }
 }
