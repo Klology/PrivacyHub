@@ -110,11 +110,13 @@ public class ProcessUtility
     public struct ProcessAndDevices
     {
         public string processName;
+        public string handlePath;
         public List<string> devices;
 
-        public ProcessAndDevices(string processName, List<string> devices)
+        public ProcessAndDevices(string processName, string handlePath, List<string> devices)
         {
             this.processName = processName;
+            this.handlePath = handlePath;
             this.devices = devices;
         }
     }
@@ -267,7 +269,8 @@ public class ProcessUtility
                 
                 if(deviceIDFound)
                 {
-                    ProcessAndDevices processAndDevices = new ProcessAndDevices(strObjectName, idsFound);
+                    ProcessAndDevices processAndDevices = new ProcessAndDevices(process.ProcessName, strObjectName, idsFound);
+                    Console.WriteLine("Handle matched!!!\n\n\nProcess Name: " + process.ProcessName + "strObjectName: " + strObjectName + "\nid: " + idsFound[0] + "\n\n\n");
                     return processAndDevices;
                 }
                 else

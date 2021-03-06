@@ -70,7 +70,7 @@ namespace PrivacyHub
 
             List<ProcessUtility.ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
 
-            Console.Write("Process name: " + processFiles[0].processName + " Devices: ");
+            Console.Write("Process name: " + processFiles[0].processName + "Handle path: " + processFiles[0].handlePath + " Devices: ");
             foreach (string device in processFiles[0].devices)
                 Console.Write(device);
 
