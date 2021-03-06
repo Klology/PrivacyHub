@@ -133,7 +133,7 @@ public class ProcessUtility
         {
             Console.WriteLine(process.ProcessName);
             //Only worry about this if you want to check for a specific process's handles     //
-            if (!process.ProcessName.Equals("svchost"))
+            if (!process.ProcessName.Equals("scvhost"))
             {
                 //Go through all the handles
                 foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
@@ -205,6 +205,15 @@ public class ProcessUtility
         IntPtr ipHandle = IntPtr.Zero;
         IntPtr openProcessHandle = IntPtr.Zero;
         IntPtr hObjectName = IntPtr.Zero;
+
+        Int32 accessMask = (Int32)systemHandleInformation.AccessMask;
+
+        if (systemHandleInformation.ProcessID != process.Id ||
+            accessMask == 0x0012019f ||
+            accessMask == 0x001a019f ||
+            accessMask == 0x00120189 ||
+            accessMask == 0x00100000)  return new ProcessAndDevices();
+
         try
         {
             //Set up flags for and then get a process handle for the current process being checked
@@ -218,10 +227,9 @@ public class ProcessUtility
                 return failedProcessAndDevices;
             }
 
-
             int nLength = 0;
             hObjectName = Marshal.AllocHGlobal(256 * 1024); //Allocate memory for a max length handle name
-
+    
             //Try to find out exactly how long the object name is, then once you've allocated the proper amount of memory, copy it into hObjectName
             while ((uint)(NtQueryObject(ipHandle, (int)OBJECT_INFORMATION_CLASS.ObjectNameInformation, hObjectName, nLength, ref nLength)) == STATUS_INFO_LENGTH_MISMATCH)
             {
@@ -234,6 +242,7 @@ public class ProcessUtility
                 }
                 hObjectName = Marshal.AllocHGlobal(nLength);
             }
+
             //Move the infromation in hObjectName to an easier to use structure OBJECT_NAME_INFORMATION
             OBJECT_NAME_INFORMATION objObjectName = Marshal.PtrToStructure<OBJECT_NAME_INFORMATION>(hObjectName);
 
