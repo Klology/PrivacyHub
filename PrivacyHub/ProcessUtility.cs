@@ -261,7 +261,7 @@ public class ProcessUtility
                 if(deviceIDFound)
                 {
                     ProcessAndDevices processAndDevices = new ProcessAndDevices(process.ProcessName, strObjectName, idsFound);
-                    Console.WriteLine("Handle matched!!!\n\n\nProcess Name: " + process.ProcessName + "strObjectName: " + strObjectName + "\nid: " + idsFound[0] + "\n\n\n");
+                    Console.WriteLine("Handle matched!!!\n\n\nProcess Name: " + process.ProcessName + " strObjectName: " + strObjectName + "\nid: " + idsFound[0] + "\n\n\n");
                     return processAndDevices;
                 }
                 else
