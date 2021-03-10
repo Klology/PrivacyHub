@@ -1,4 +1,5 @@
-﻿using PrivacyHub.WindowsProcessUtility;
+﻿using PrivacyHub.WindowsProcessUtilityPackage;
+using PrivacyHub;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public class WindowsProcessUtility
+public class WindowsProcessUtility : ProcessUtility
 {
     [DllImport("ntdll.dll")]
     private static extern uint NtQuerySystemInformation(int SystemInformationClass, IntPtr SystemInformation, int SystemInformationLength, ref int returnLength);

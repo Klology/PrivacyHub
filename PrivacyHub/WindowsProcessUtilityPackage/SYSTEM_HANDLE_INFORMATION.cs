@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PrivacyHub.WindowsProcessUtility
+namespace PrivacyHub.WindowsProcessUtilityPackage
 {
     /// <summary>
     /// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/ex/sysinfo/handle_table_entry.htm?ts=0,242

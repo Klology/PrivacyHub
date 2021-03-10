@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PrivacyHub.WindowsProcessUtility
+namespace PrivacyHub.WindowsProcessUtilityPackage
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct OBJECT_NAME_INFORMATION

@@ -70,7 +70,7 @@
     <Compile Include="WindowsProcessUtilityPackage\FileType.cs" />
     <Compile Include="WindowsProcessUtilityPackage\OBJECT_INFORMATION_CLASS.cs" />
     <Compile Include="WindowsProcessUtilityPackage\OBJECT_NAME_INFORMATION.cs" />
-    <Compile Include="WindowsProcessUtilityPackage\ProcessAndDevices.cs" />
+    <Compile Include="ProcessAndDevices.cs" />
     <Compile Include="WindowsProcessUtilityPackage\PROCESS_ACCESS_FLAGS.cs" />
     <Compile Include="WindowsProcessUtilityPackage\SYSTEM_HANDLE_INFORMATION.cs" />
     <Compile Include="WindowsProcessUtilityPackage\UNICODE_STRING.cs" />

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrivacyHub.WindowsProcessUtility
+namespace PrivacyHub.WindowsProcessUtilityPackage
 {
     [Flags]
     enum PROCESS_ACCESS_FLAGS : uint

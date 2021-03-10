@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PrivacyHub.WindowsProcessUtility
+namespace PrivacyHub.WindowsProcessUtilityPackage
 {
     [StructLayout(LayoutKind.Sequential)]
     struct UNICODE_STRING
