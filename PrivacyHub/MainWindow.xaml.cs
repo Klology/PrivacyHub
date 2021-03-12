@@ -84,6 +84,9 @@ namespace PrivacyHub
         {
             Console.WriteLine("Device Button Clicked");
 
+            DeviceID_LB.Items.Clear();
+            TextBox_Page.Text = "Devices";
+
             ManagementObjectCollection collection;
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
                 collection = searcher.Get();
@@ -127,11 +130,20 @@ namespace PrivacyHub
         private void ProcessButtonClicked(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Process Button Clicked");
+
+            TextBox_Page.Text = "Processes";
+
+            DeviceID_LB.Items.Clear();
         }
 
         private void SettingsButtonClicked(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Settings Button Clicked");
+        }
+
+        private void SelectDevicesButton(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Select Devices Button Clicked");
         }
     }
 }
