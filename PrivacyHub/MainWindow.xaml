@@ -5,9 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrivacyHub"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="#FF292B2E" Foreground="White">
+        Title="PrivacyHub" Height="450" Width="800" Background="#FF292B2E" Foreground="White">
     <Grid>
-        <ListBox HorizontalAlignment="Left" Height="348" Margin="32,51,0,0" VerticalAlignment="Top" Width="706" x:Name="DeviceID_LB"/>
+        <ListBox HorizontalAlignment="Left" Height="333" Margin="127,60,0,0" VerticalAlignment="Top" Width="639" x:Name="DeviceID_LB"/>
+        <Button Content ="Devices" HorizontalAlignment="Left" Height="60" Margin="28,60,0,0" VerticalAlignment="Top" Width="60" x:Name="Device" Click="DeviceButtonClicked"/>
+        <Button Content ="Processes" HorizontalAlignment="Left" Height="60" Margin="28,138,0,0" VerticalAlignment="Top" Width="60" x:Name="Process" Click="ProcessButtonClicked"/>
+        <Button Content="Settings" HorizontalAlignment="Left" Margin="28,333,0,0" VerticalAlignment="Top" Width="60" Height="60" Click="SettingsButtonClicked"/>
+        <Border BorderBrush="#FF42405D" BorderThickness="2" HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="100"/>
+        <Label Content="Options" Margin="28,10,704,0" VerticalAlignment="Top" Foreground="White"/>
 
     </Grid>
 </Window>
