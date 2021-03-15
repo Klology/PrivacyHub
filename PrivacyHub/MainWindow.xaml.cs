@@ -64,11 +64,11 @@ namespace PrivacyHub
 
             collection.Dispose();
             
-            ProcessUtility processUtility = new ProcessUtility();
+            ProcessUtility processUtility = new WindowsProcessUtility();
             
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
 
-            List<ProcessUtility.ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
+            List<ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
 
             for(int i = 0; i < processFiles.Count; i++)
             {

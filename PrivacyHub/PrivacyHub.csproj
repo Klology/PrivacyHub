@@ -66,6 +66,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ProcessUtility.cs" />
+    <Compile Include="WindowsProcessUtilityPackage\FileType.cs" />
+    <Compile Include="WindowsProcessUtilityPackage\OBJECT_INFORMATION_CLASS.cs" />
+    <Compile Include="WindowsProcessUtilityPackage\OBJECT_NAME_INFORMATION.cs" />
+    <Compile Include="ProcessAndDevices.cs" />
+    <Compile Include="WindowsProcessUtilityPackage\PROCESS_ACCESS_FLAGS.cs" />
+    <Compile Include="WindowsProcessUtilityPackage\SYSTEM_HANDLE_INFORMATION.cs" />
+    <Compile Include="WindowsProcessUtilityPackage\UNICODE_STRING.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -74,7 +82,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ProcessUtility.cs" />
+    <Compile Include="WindowsProcessUtilityPackage\WindowsProcessUtility.cs" />
     <Compile Include="SystemProcesses.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="MainWindow.xaml.cs">
