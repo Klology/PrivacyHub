@@ -23,16 +23,19 @@ namespace PrivacyHub
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private List<string> searchableSubstrings;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            /*
+            
             ManagementObjectCollection collection;
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
                 collection = searcher.Get();
 
-            List<string> searchableSubstrings = new List<string>();
+            searchableSubstrings = new List<string>();
 
             foreach(var device in collection) {
                 string curDeviceInfo = (string)device.GetPropertyValue("Dependent");
@@ -60,23 +63,7 @@ namespace PrivacyHub
 
             }
 
-            SystemProcesses systemProcesses = new SystemProcesses();
-            systemProcesses.BindToRunningProcesses();
-
             collection.Dispose();
-            
-            ProcessUtility processUtility = new ProcessUtility();
-            
-            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
-
-            List<ProcessUtility.ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
-
-            for(int i = 0; i < processFiles.Count; i++)
-            {
-                Console.Write("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (string device in processFiles[i].devices)
-                    Console.Write(device);
-            }*/
 
         }
 
@@ -86,6 +73,57 @@ namespace PrivacyHub
 
             DeviceID_LB.Items.Clear();
             TextBox_Page.Text = "Devices";
+
+            foreach (string deviceID in searchableSubstrings)
+            {
+                DeviceID_LB.Items.Add(deviceID);
+            }
+
+            SystemProcesses systemProcesses = new SystemProcesses();
+            systemProcesses.BindToRunningProcesses();
+
+
+            ProcessUtility processUtility = new ProcessUtility();
+
+            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
+
+            List<ProcessUtility.ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
+
+            for (int i = 0; i < processFiles.Count; i++)
+            {
+                Console.Write("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
+                foreach (string device in processFiles[i].devices)
+                    Console.Write(device);
+            }
+        }
+
+        private void ProcessButtonClicked(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Process Button Clicked");
+
+            TextBox_Page.Text = "Processes";
+
+            DeviceID_LB.Items.Clear();
+        }
+
+        private void SettingsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Settings Button Clicked");
+
+            TextBox_Page.Text = "Settings";
+
+            DeviceID_LB.Items.Clear();
+
+
+        }
+
+        private void SelectDevicesButton(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Select Devices Button Clicked");
+
+            TextBox_Page.Text = "Select Devices";
+
+            DeviceID_LB.Items.Clear();
 
             ManagementObjectCollection collection;
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
@@ -121,29 +159,10 @@ namespace PrivacyHub
                 devices.Dispose();
             }
 
-            foreach(string deviceID in searchableSubstrings)
+            foreach (string deviceID in searchableSubstrings)
             {
                 DeviceID_LB.Items.Add(deviceID);
             }
-        }
-
-        private void ProcessButtonClicked(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("Process Button Clicked");
-
-            TextBox_Page.Text = "Processes";
-
-            DeviceID_LB.Items.Clear();
-        }
-
-        private void SettingsButtonClicked(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("Settings Button Clicked");
-        }
-
-        private void SelectDevicesButton(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("Select Devices Button Clicked");
         }
     }
 }
