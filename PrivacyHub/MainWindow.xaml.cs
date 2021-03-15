@@ -161,6 +161,9 @@ namespace PrivacyHub
 
             foreach (string deviceID in searchableSubstrings)
             {
+              //  RadioButton radioButton = new RadioButton();
+               // radioButton.Name = deviceID;
+
                 DeviceID_LB.Items.Add(deviceID);
             }
         }
