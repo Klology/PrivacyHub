@@ -104,6 +104,25 @@ namespace PrivacyHub
             TextBox_Page.Text = "Processes";
 
             DeviceID_LB.Items.Clear();
+
+            SystemProcesses systemProcesses = new SystemProcesses();
+            systemProcesses.BindToRunningProcesses();
+
+
+            ProcessUtility processUtility = new ProcessUtility();
+
+            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
+
+            List<ProcessUtility.ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
+
+            for (int i = 0; i < processFiles.Count; i++)
+            {
+                Console.Write("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
+                foreach (string device in processFiles[i].devices)
+                    Console.Write(device);
+
+                DeviceID_LB.Items.Add(processFiles[i].processName);
+            }
         }
 
         private void SettingsButtonClicked(object sender, RoutedEventArgs e)
