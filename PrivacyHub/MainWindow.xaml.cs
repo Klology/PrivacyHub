@@ -31,7 +31,7 @@ namespace PrivacyHub
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
                 collection = searcher.Get();
 
-            List<string> searchableSubstrings = new List<string>();
+            List<Device> deviceList = new List<Device>();
 
             foreach(var device in collection) {
                 string curDeviceInfo = (string)device.GetPropertyValue("Dependent");
@@ -49,7 +49,7 @@ namespace PrivacyHub
 
                         if (newDevice.HasSearchableSubstring)
                         {
-                            searchableSubstrings.Add(newDevice.PNPDeviceIDSubstring);
+                            deviceList.Add(newDevice);
                         }
                             
                     }
@@ -68,13 +68,13 @@ namespace PrivacyHub
             
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
 
-            List<ProcessAndDevices> processFiles = processUtility.GetProcessHandles(processList, searchableSubstrings);
+            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
 
             for(int i = 0; i < processFiles.Count; i++)
             {
-                Console.Write("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (string device in processFiles[i].devices)
-                    Console.Write(device);
+                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
+                foreach (Device device in processFiles[i].devices)
+                    Console.WriteLine(device.Name);
             }
 
         }

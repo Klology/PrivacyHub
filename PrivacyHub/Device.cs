@@ -12,9 +12,9 @@ namespace PrivacyHub
 		private string pNPDeviceIDSubstring;
 		private bool hasSearchableSubstring;
 
-		public string Name { get; }
-		public string PNPClass { get; }
-		public string PNPDeviceID { get; }
+		public string Name { get { return name; } }
+		public string PNPClass { get { return pNPClass; } }
+		public string PNPDeviceID { get { return pNPDeviceID; } }
 		public string PNPDeviceIDSubstring { get { return pNPDeviceIDSubstring; } }
 		public bool HasSearchableSubstring { get { return hasSearchableSubstring; } }
 

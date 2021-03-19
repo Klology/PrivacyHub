@@ -9,6 +9,6 @@ namespace PrivacyHub
 {
     interface ProcessUtility
     {
-        List<ProcessAndDevices> GetProcessHandles(List<Process> target_processes, List<string> searchableSubstrings);
+        List<ProcessAndDevices> GetProcessAndDevices(List<Process> target_processes, List<Device> devices);
     }
 }

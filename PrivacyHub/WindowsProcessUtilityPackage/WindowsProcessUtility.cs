@@ -46,14 +46,14 @@ public class WindowsProcessUtility : ProcessUtility
     private const int CNST_SYSTEM_HANDLE_INFORMATION = 0x10;
     private const int OBJECT_TYPE_FILE = 0x24;
 
-    private static List<string> searchableSubstring = new List<string>();
+    private static List<Device> deviceList = new List<Device>();
 
-    public List<ProcessAndDevices> GetProcessHandles(List<Process> target_processes, List<string> searchableSubstrings)
+    public List<ProcessAndDevices> GetProcessAndDevices(List<Process> target_processes, List<Device> devices)
     {
         List<ProcessAndDevices> processNameAndDevices = new List<ProcessAndDevices>();
         int count = 0;
 
-        searchableSubstring = searchableSubstrings;
+        deviceList = devices;
 
         //This gets a list of all the handels for the system
         List<SYSTEM_HANDLE_INFORMATION> aHandles = GetHandles().ToList();
@@ -67,15 +67,16 @@ public class WindowsProcessUtility : ProcessUtility
             {
                 ProcessAndDevices curProccessAndDevices = new ProcessAndDevices();
                 curProccessAndDevices.processName = process.ProcessName;
-                curProccessAndDevices.devices = new List<string>();
+                curProccessAndDevices.devices = new List<Device>();
 
                 //Go through all the handles
                 foreach (SYSTEM_HANDLE_INFORMATION handle_info in aHandles)
                 {
-                    string deviceID = GetHandleName(handle_info, process, count, target_processes.Count);
-
-                    if (deviceID != null) curProccessAndDevices.devices.Add(deviceID);
+                    Device device = GetHandleName(handle_info, process, count, target_processes.Count);
                     
+                    if(device != null && !curProccessAndDevices.devices.Contains(device)) {
+                        curProccessAndDevices.devices.Add(device);
+                    }
                 }
 
                 if (curProccessAndDevices.devices.Count != 0) {
@@ -136,13 +137,13 @@ public class WindowsProcessUtility : ProcessUtility
         return aHandles;
     }
 
-    private static string GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
+    private static Device GetHandleName(SYSTEM_HANDLE_INFORMATION systemHandleInformation, Process process, int count, int handleCount)
     {
         IntPtr ipHandle = IntPtr.Zero;
         IntPtr openProcessHandle = IntPtr.Zero;
         IntPtr hObjectName = IntPtr.Zero;
 
-        string IDFound = null;
+        Device IDFound = null;
         Int32 accessMask = (Int32)systemHandleInformation.AccessMask;
 
         if (systemHandleInformation.ProcessID != process.Id ||
@@ -191,11 +192,12 @@ public class WindowsProcessUtility : ProcessUtility
                 
 
                 //Check the handle name for if it contains anything releveant (in this case it's checking for a device ID) if it does, return it
-                foreach(string deviceID in searchableSubstring)
+                foreach(Device device in deviceList)
                 {
-                    if (strObjectName.ToLower().Contains(deviceID.ToLower()))
+                    if (strObjectName.ToLower().Contains(device.PNPDeviceIDSubstring.ToLower()))
                     {
-                        IDFound = deviceID;
+                        IDFound = device;
+                        
                         deviceIDFound = true;
                     }
                 }

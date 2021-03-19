@@ -9,13 +9,11 @@ namespace PrivacyHub
     public struct ProcessAndDevices
     {
         public string processName;
-        public string handlePath;
-        public List<string> devices;
+        public List<Device> devices;
 
-        public ProcessAndDevices(string processName, string handlePath, List<string> devices)
+        public ProcessAndDevices(string processName, List<Device> devices)
         {
             this.processName = processName;
-            this.handlePath = handlePath;
             this.devices = devices;
         }
     }
