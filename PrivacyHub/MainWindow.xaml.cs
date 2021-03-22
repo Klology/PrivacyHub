@@ -25,6 +25,7 @@ namespace PrivacyHub
     {
 
         private List<string> searchableSubstrings;
+        List<CheckBox> checkBoxes;
 
         public MainWindow()
         {
@@ -36,8 +37,9 @@ namespace PrivacyHub
                 collection = searcher.Get();
 
             searchableSubstrings = new List<string>();
+            checkBoxes = new List<CheckBox>();
 
-            foreach(var device in collection) {
+            foreach (var device in collection) {
                 string curDeviceInfo = (string)device.GetPropertyValue("Dependent");
                 string usbAddress = (curDeviceInfo.Split(new String[] { "DeviceID=" }, 2, StringSplitOptions.None)[1]);
 
@@ -178,17 +180,52 @@ namespace PrivacyHub
                 devices.Dispose();
             }
 
+            checkBoxes.Clear();
+
             foreach (string deviceID in searchableSubstrings)
             {
-                RadioButton radioButton = new RadioButton();
-                radioButton.Content = deviceID;
-                //radioButton.IsChecked = true;
+                CheckBox checkBox = new CheckBox();
+                checkBox.Content = deviceID;
+                checkBox.Click += CheckBox_Click;
+                checkBox.IsChecked = true;
 
-                DeviceID_LB.Items.Add(radioButton);
+                checkBoxes.Add(checkBox);
+
+                DeviceID_LB.Items.Add(checkBox);
             }
+
+            Button confirmSelection = new Button();
+            confirmSelection.Click += ConfirmSelection_Click;
+            confirmSelection.Content = "Confirm Selection";
+
+            DeviceID_LB.Items.Add(confirmSelection);
         }
 
+        private void ConfirmSelection_Click(object sender, RoutedEventArgs e)
+        {
+            searchableSubstrings.Clear();
 
-        
+            foreach(CheckBox checkBox in checkBoxes)
+            {
+                if ((bool)checkBox.IsChecked)
+                    searchableSubstrings.Add(checkBox.Content.ToString());
+            }
+
+            Console.WriteLine("searchableSubstrings Updated");
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox checkBox = sender as CheckBox;
+
+            if((bool)checkBox.IsChecked)
+            {
+                Console.WriteLine("CheckBox is checked");
+            }
+            else
+            {
+                Console.WriteLine("CheckBox is not checked");
+            }
+        }
     }
 }
