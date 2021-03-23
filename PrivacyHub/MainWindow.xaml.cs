@@ -75,6 +75,7 @@ namespace PrivacyHub
 
             DeviceID_LB.Items.Clear();
             TextBox_Page.Text = "Devices";
+            ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             foreach (string deviceID in searchableSubstrings)
             {
@@ -104,6 +105,7 @@ namespace PrivacyHub
             Console.WriteLine("Process Button Clicked");
 
             TextBox_Page.Text = "Processes";
+            ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             DeviceID_LB.Items.Clear();
 
@@ -132,6 +134,7 @@ namespace PrivacyHub
             Console.WriteLine("Settings Button Clicked");
 
             TextBox_Page.Text = "Settings";
+            ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             DeviceID_LB.Items.Clear();
 
@@ -194,11 +197,7 @@ namespace PrivacyHub
                 DeviceID_LB.Items.Add(checkBox);
             }
 
-            Button confirmSelection = new Button();
-            confirmSelection.Click += ConfirmSelection_Click;
-            confirmSelection.Content = "Confirm Selection";
-
-            DeviceID_LB.Items.Add(confirmSelection);
+            ConfirmSelection_Button.Visibility = Visibility.Visible;
         }
 
         private void ConfirmSelection_Click(object sender, RoutedEventArgs e)

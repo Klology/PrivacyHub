@@ -15,6 +15,7 @@
         <Label Content="Options" Margin="28,10,704,0" VerticalAlignment="Top" Foreground="White"/>
         <Button Content="Select Devices" HorizontalAlignment="Left" Margin="636,21,0,0" VerticalAlignment="Top" Width="130" Click="SelectDevicesButton"/>
         <TextBox Height="45" Margin="127,10,0,0" TextWrapping="Wrap" Text="Devices" VerticalAlignment="Top" Width="504" SpellCheck.IsEnabled="True" FontSize="32" x:Name="TextBox_Page" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
+        <Button Content="Confirm Selection" HorizontalAlignment="Left" Margin="636,333,0,0" VerticalAlignment="Top"  Visibility="Hidden" Width="115" Click="ConfirmSelection_Click" x:Name="ConfirmSelection_Button" Height="40"/>
 
     </Grid>
 </Window>
