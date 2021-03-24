@@ -36,6 +36,7 @@ namespace PrivacyHub
                 collection = searcher.Get();
 
             deviceList = new List<Device>();
+            checkBoxes = new List<CheckBox>();
 
             foreach (var device in collection)
             {
