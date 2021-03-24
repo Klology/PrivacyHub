@@ -189,7 +189,6 @@ namespace PrivacyHub
             {
                 CheckBox checkBox = new CheckBox();
                 checkBox.Content = deviceID;
-                checkBox.Click += CheckBox_Click;
                 checkBox.IsChecked = true;
 
                 checkBoxes.Add(checkBox);
@@ -211,20 +210,6 @@ namespace PrivacyHub
             }
 
             Console.WriteLine("searchableSubstrings Updated");
-        }
-
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            CheckBox checkBox = sender as CheckBox;
-
-            if((bool)checkBox.IsChecked)
-            {
-                Console.WriteLine("CheckBox is checked");
-            }
-            else
-            {
-                Console.WriteLine("CheckBox is not checked");
-            }
         }
     }
 }
