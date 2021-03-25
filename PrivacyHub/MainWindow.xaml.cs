@@ -24,8 +24,10 @@ namespace PrivacyHub
     public partial class MainWindow : Window
     {
 
-        List<CheckBox> checkBoxes;
-        List<Device> deviceList;
+        private List<CheckBox> checkBoxes;
+        private List<Device> deviceList;
+        private List<Process> processList;
+        private List<ProcessAndDevices> processFiles;
 
         public MainWindow()
         {
@@ -35,19 +37,7 @@ namespace PrivacyHub
             checkBoxes = new List<CheckBox>();
 
             DiscoverDevices();
-
-            ProcessUtility processUtility = new WindowsProcessUtility();
-
-            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
-
-            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
-
-            for (int i = 0; i < processFiles.Count; i++)
-            {
-                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (Device device in processFiles[i].devices)
-                    Console.WriteLine(device.Name);
-            }
+            ConnectProcessesAndDevices();
 
         }
 
@@ -91,6 +81,15 @@ namespace PrivacyHub
             collection.Dispose();
         }
 
+        private void ConnectProcessesAndDevices()
+        {
+            ProcessUtility processUtility = new WindowsProcessUtility();
+
+            processList = System.Diagnostics.Process.GetProcesses().ToList();
+
+            processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+        }
+
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Device Button Clicked");
@@ -104,18 +103,7 @@ namespace PrivacyHub
                 DeviceID_LB.Items.Add(device.Name);
             }
 
-            ProcessUtility processUtility = new WindowsProcessUtility();
-
-            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
-
-            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
-
-            for (int i = 0; i < processFiles.Count; i++)
-            {
-                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (Device device in processFiles[i].devices)
-                    Console.WriteLine(device.Name);
-            }
+            ConnectProcessesAndDevices();
         }
 
         private void ProcessButtonClicked(object sender, RoutedEventArgs e)
@@ -127,11 +115,7 @@ namespace PrivacyHub
 
             DeviceID_LB.Items.Clear();
 
-            ProcessUtility processUtility = new WindowsProcessUtility();
-
-            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
-
-            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+            ConnectProcessesAndDevices();
 
             for (int i = 0; i < processFiles.Count; i++)
             {
