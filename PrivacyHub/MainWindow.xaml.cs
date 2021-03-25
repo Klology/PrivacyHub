@@ -98,12 +98,23 @@ namespace PrivacyHub
             TextBox_Page.Text = "Devices";
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
+            ConnectProcessesAndDevices();
+
             foreach (Device device in deviceList)
             {
-                DeviceID_LB.Items.Add(device.Name);
+                DeviceID_LB.Items.Add(device.Name + " is being used by the processes:");
+
+                for (int i = 0; i < processFiles.Count; i++)
+                {
+                    foreach (Device processDevice in processFiles[i].devices)
+                    {
+                        if (String.Compare(device.Name, processDevice.Name) == 0)
+                            DeviceID_LB.Items.Add("     " + processFiles[i].processName);
+                    }
+                    
+                }
             }
 
-            ConnectProcessesAndDevices();
         }
 
         private void ProcessButtonClicked(object sender, RoutedEventArgs e)
@@ -123,7 +134,9 @@ namespace PrivacyHub
                 foreach (Device device in processFiles[i].devices)
                     Console.WriteLine(device.Name);
 
-                DeviceID_LB.Items.Add(processFiles[i].processName);
+                DeviceID_LB.Items.Add(processFiles[i].processName + " is using the devices:");
+                foreach (Device device in processFiles[i].devices)
+                    DeviceID_LB.Items.Add("     " + device.Name);
             }
         }
 
