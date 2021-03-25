@@ -31,12 +31,33 @@ namespace PrivacyHub
         {
             InitializeComponent();
 
+            deviceList = new List<Device>();
+            checkBoxes = new List<CheckBox>();
+
+            DiscoverDevices();
+
+            ProcessUtility processUtility = new WindowsProcessUtility();
+
+            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
+
+            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+
+            for (int i = 0; i < processFiles.Count; i++)
+            {
+                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
+                foreach (Device device in processFiles[i].devices)
+                    Console.WriteLine(device.Name);
+            }
+
+        }
+
+        private void DiscoverDevices()
+        {
+            deviceList.Clear();
+
             ManagementObjectCollection collection;
             using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
                 collection = searcher.Get();
-
-            deviceList = new List<Device>();
-            checkBoxes = new List<CheckBox>();
 
             foreach (var device in collection)
             {
@@ -68,20 +89,6 @@ namespace PrivacyHub
             }
 
             collection.Dispose();
-
-            ProcessUtility processUtility = new WindowsProcessUtility();
-
-            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
-
-            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
-
-            for (int i = 0; i < processFiles.Count; i++)
-            {
-                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (Device device in processFiles[i].devices)
-                    Console.WriteLine(device.Name);
-            }
-
         }
 
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
@@ -144,8 +151,6 @@ namespace PrivacyHub
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             DeviceID_LB.Items.Clear();
-
-
         }
 
         private void SelectDevicesButton(object sender, RoutedEventArgs e)
@@ -156,41 +161,7 @@ namespace PrivacyHub
 
             DeviceID_LB.Items.Clear();
 
-            ManagementObjectCollection collection;
-            using (var searcher = new ManagementObjectSearcher(@"Select * from Win32_USBControllerDevice"))
-                collection = searcher.Get();
-
-            deviceList = new List<Device>();
-
-            foreach (var device in collection)
-            {
-                string curDeviceInfo = (string)device.GetPropertyValue("Dependent");
-                string usbAddress = (curDeviceInfo.Split(new String[] { "DeviceID=" }, 2, StringSplitOptions.None)[1]);
-
-                ManagementObjectCollection devices;
-                using (var searcher = new ManagementObjectSearcher("Select * from Win32_PnPEntity where PNPDeviceID = " + usbAddress))
-                    devices = searcher.Get();
-
-                foreach (var usbDevice in devices)
-                {
-                    String pnpClass = usbDevice.GetPropertyValue("PNPClass").ToString();
-                    if (pnpClass.Equals("AudioEndpoint") || pnpClass.Equals("MEDIA") || pnpClass.Equals("Image") || pnpClass.Equals("Camera"))
-                    {
-
-                        Device newDevice = new Device(usbDevice);
-
-                        if (newDevice.HasSearchableSubstring)
-                        {
-                            deviceList.Add(newDevice);
-                        }
-
-                    }
-                }
-
-                devices.Dispose();
-            }
-
-            checkBoxes.Clear();
+            DiscoverDevices();
 
             foreach (Device device in deviceList)
             {
