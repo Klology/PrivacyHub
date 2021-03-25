@@ -67,9 +67,6 @@ namespace PrivacyHub
 
             }
 
-            SystemProcesses systemProcesses = new SystemProcesses();
-            systemProcesses.BindToRunningProcesses();
-
             collection.Dispose();
 
             ProcessUtility processUtility = new WindowsProcessUtility();
@@ -100,10 +97,6 @@ namespace PrivacyHub
                 DeviceID_LB.Items.Add(device.Name);
             }
 
-            SystemProcesses systemProcesses = new SystemProcesses();
-            systemProcesses.BindToRunningProcesses();
-
-
             ProcessUtility processUtility = new WindowsProcessUtility();
 
             List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
@@ -126,10 +119,6 @@ namespace PrivacyHub
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             DeviceID_LB.Items.Clear();
-
-            SystemProcesses systemProcesses = new SystemProcesses();
-            systemProcesses.BindToRunningProcesses();
-
 
             ProcessUtility processUtility = new WindowsProcessUtility();
 

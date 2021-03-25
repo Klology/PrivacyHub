@@ -83,7 +83,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="WindowsProcessUtilityPackage\WindowsProcessUtility.cs" />
-    <Compile Include="SystemProcesses.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
