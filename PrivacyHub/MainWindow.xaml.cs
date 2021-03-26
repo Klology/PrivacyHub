@@ -27,8 +27,6 @@ namespace PrivacyHub
         List<Device> deviceList;
         List<CheckBox> checkBoxes;
         DeviceFetcher deviceFetcher = new WindowsWebcamAndMicrophoneFetcher();
-        SystemProcesses systemProcesses;
-        ProcessUtility processUtility;
         List<Process> processList;
         List<ProcessAndDevices> processFiles;
 
@@ -38,21 +36,15 @@ namespace PrivacyHub
 
             deviceList = deviceFetcher.getAllDevices();
             checkBoxes = new List<CheckBox>();
+            ConnectProcessesAndDevices();
 
-            systemProcesses = new SystemProcesses();
-            systemProcesses.BindToRunningProcesses();
+        }
 
-            processUtility = new WindowsProcessUtility();
+        private void ConnectProcessesAndDevices()
+        {
+            ProcessUtility processUtility = new WindowsProcessUtility();
             processList = System.Diagnostics.Process.GetProcesses().ToList();
             processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
-
-            for (int i = 0; i < processFiles.Count; i++)
-            {
-                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (Device device in processFiles[i].devices)
-                    Console.WriteLine(device.Name);
-            }
-
         }
 
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
@@ -63,27 +55,23 @@ namespace PrivacyHub
             TextBox_Page.Text = "Devices";
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
+            ConnectProcessesAndDevices();
+
             foreach (Device device in deviceList)
             {
-                DeviceID_LB.Items.Add(device.Name);
+                DeviceID_LB.Items.Add(device.Name + " is being used by the processes:");
+
+                for (int i = 0; i < processFiles.Count; i++)
+                {
+                    foreach (Device processDevice in processFiles[i].devices)
+                    {
+                        if (String.Compare(device.Name, processDevice.Name) == 0)
+                            DeviceID_LB.Items.Add("     " + processFiles[i].processName);
+                    }
+                    
+                }
             }
 
-            SystemProcesses systemProcesses = new SystemProcesses();
-            systemProcesses.BindToRunningProcesses();
-
-
-            ProcessUtility processUtility = new WindowsProcessUtility();
-
-            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
-
-            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
-
-            for (int i = 0; i < processFiles.Count; i++)
-            {
-                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (Device device in processFiles[i].devices)
-                    Console.WriteLine(device.Name);
-            }
         }
 
         private void ProcessButtonClicked(object sender, RoutedEventArgs e)
@@ -95,15 +83,7 @@ namespace PrivacyHub
 
             DeviceID_LB.Items.Clear();
 
-            SystemProcesses systemProcesses = new SystemProcesses();
-            systemProcesses.BindToRunningProcesses();
-
-
-            ProcessUtility processUtility = new WindowsProcessUtility();
-
-            List<Process> processList = System.Diagnostics.Process.GetProcesses().ToList();
-
-            List<ProcessAndDevices> processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+            ConnectProcessesAndDevices();
 
             for (int i = 0; i < processFiles.Count; i++)
             {
@@ -111,7 +91,9 @@ namespace PrivacyHub
                 foreach (Device device in processFiles[i].devices)
                     Console.WriteLine(device.Name);
 
-                DeviceID_LB.Items.Add(processFiles[i].processName);
+                DeviceID_LB.Items.Add(processFiles[i].processName + " is using the devices:");
+                foreach (Device device in processFiles[i].devices)
+                    DeviceID_LB.Items.Add("     " + device.Name);
             }
         }
 
@@ -123,8 +105,6 @@ namespace PrivacyHub
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             DeviceID_LB.Items.Clear();
-
-
         }
 
         private void SelectDevicesButton(object sender, RoutedEventArgs e)
