@@ -66,7 +66,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DeviceFetcher.cs" />
     <Compile Include="ProcessUtility.cs" />
+    <Compile Include="WindowsDeviceFetcherPackage\WindowsWebcamAndMicrophoneFetcher.cs" />
     <Compile Include="WindowsProcessUtilityPackage\FileType.cs" />
     <Compile Include="WindowsProcessUtilityPackage\OBJECT_INFORMATION_CLASS.cs" />
     <Compile Include="WindowsProcessUtilityPackage\OBJECT_NAME_INFORMATION.cs" />
@@ -117,6 +119,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
