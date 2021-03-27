@@ -53,6 +53,9 @@ namespace PrivacyHub
 
             DeviceID_LB.Items.Clear();
             TextBox_Page.Text = "Devices";
+
+            Devices_Refresh.Visibility = Visibility.Visible;
+            Processes_Refresh.Visibility = Visibility.Hidden;
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             ConnectProcessesAndDevices();
@@ -79,6 +82,9 @@ namespace PrivacyHub
             Console.WriteLine("Process Button Clicked");
 
             TextBox_Page.Text = "Processes";
+
+            Devices_Refresh.Visibility = Visibility.Hidden;
+            Processes_Refresh.Visibility = Visibility.Visible;
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             DeviceID_LB.Items.Clear();
@@ -131,6 +137,8 @@ namespace PrivacyHub
                 DeviceID_LB.Items.Add(checkBox);
             }
 
+            Devices_Refresh.Visibility = Visibility.Hidden;
+            Processes_Refresh.Visibility = Visibility.Hidden;
             ConfirmSelection_Button.Visibility = Visibility.Visible;
         }
 
