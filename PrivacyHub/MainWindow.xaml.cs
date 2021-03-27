@@ -36,7 +36,8 @@ namespace PrivacyHub
 
             deviceList = deviceFetcher.getAllDevices();
             checkBoxes = new List<CheckBox>();
-            ConnectProcessesAndDevices();
+
+            DeviceButtonClicked(null, null);
 
         }
 
