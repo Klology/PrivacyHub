@@ -60,7 +60,7 @@ public class WindowsProcessUtility : ProcessUtility
 
         foreach (Process process in target_processes)
         {
-            Console.WriteLine(process.ProcessName);
+            //Console.WriteLine(process.ProcessName);
 
             //Only worry about this if you want to check for a specific process's handles     //
             if (!process.ProcessName.Equals("scvhost"))
@@ -204,13 +204,13 @@ public class WindowsProcessUtility : ProcessUtility
                 
                 if(deviceIDFound)
                 {
-                    Console.WriteLine("Handle matched!!!\n\n\nProcess Name: " + process.ProcessName + "strObjectName: " + strObjectName + "\nid: " + IDFound + "\n\n\n");
+                    //Console.WriteLine("Handle matched!!!\n\n\nProcess Name: " + process.ProcessName + "strObjectName: " + strObjectName + "\nid: " + IDFound + "\n\n\n");
                     
                 }
                 else
                 {
                     //If it doesnt, return null
-                    Console.WriteLine("(" + count + " / " + handleCount + "): " + strObjectName);
+                    //Console.WriteLine("(" + count + " / " + handleCount + "): " + strObjectName);
                    
                 }
                 

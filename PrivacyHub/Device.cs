@@ -26,7 +26,7 @@ namespace PrivacyHub
 			foreach (var property in usbDevice.Properties)
 			{
 
-				System.Diagnostics.Debug.WriteLine("Test to see CompatibleID string: " + usbDevice.GetPropertyValue("CompatibleID").ToString());
+				//System.Diagnostics.Debug.WriteLine("Test to see CompatibleID string: " + usbDevice.GetPropertyValue("CompatibleID").ToString());
 
 				//Cycles through properties of usbDevice and stores values in a list. If an exception occurs, the item in list is set as null
 				try
@@ -93,7 +93,7 @@ namespace PrivacyHub
 						//convert list form of substring into proper string. Print toString of Device
 						string temp = new string(pnpSubstring.ToArray());
 						pNPDeviceIDSubstring = temp;
-						System.Diagnostics.Debug.WriteLine(toString());
+						//System.Diagnostics.Debug.WriteLine(toString());
 						return true;
                     }
 

@@ -94,9 +94,11 @@ namespace PrivacyHub
 
             for (int i = 0; i < processFiles.Count; i++)
             {
+                /*
                 Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
                 foreach (Device device in processFiles[i].devices)
                     Console.WriteLine(device.Name);
+                */
 
                 DeviceID_LB.Items.Add(processFiles[i].processName + " is using the devices:");
                 foreach (Device device in processFiles[i].devices)
