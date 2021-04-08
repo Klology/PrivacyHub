@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
 using PrivacyHub.WindowsDeviceFetcherPackage;
+using System.Timers;
 
 namespace PrivacyHub
 {
@@ -29,6 +30,8 @@ namespace PrivacyHub
         DeviceFetcher deviceFetcher = new WindowsWebcamAndMicrophoneFetcher();
         List<Process> processList;
         List<ProcessAndDevices> processFiles;
+        private static Timer timer;
+        String currentContext;
 
         public MainWindow()
         {
@@ -37,8 +40,31 @@ namespace PrivacyHub
             deviceList = deviceFetcher.getAllDevices();
             checkBoxes = new List<CheckBox>();
 
+            timer = new Timer();
+            timer.Elapsed += UpdateTimer;
+            timer.Interval = 10000;
+            timer.Start();
+
             DeviceButtonClicked(null, null);
 
+        }
+
+        private void UpdateTimer(object sender, EventArgs e)
+        {
+            if (String.Compare("Devices", currentContext) == 0)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    DeviceButtonClicked(null, null);
+                });
+            }
+            else if (String.Compare("Processes", currentContext) == 0)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    ProcessButtonClicked(null, null);
+                });
+            }
         }
 
         private void ConnectProcessesAndDevices()
@@ -51,9 +77,9 @@ namespace PrivacyHub
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Device Button Clicked");
-
             DeviceID_LB.Items.Clear();
             TextBox_Page.Text = "Devices";
+            currentContext = "Devices";
 
             Devices_Refresh.Visibility = Visibility.Visible;
             Processes_Refresh.Visibility = Visibility.Hidden;
@@ -83,6 +109,7 @@ namespace PrivacyHub
             Console.WriteLine("Process Button Clicked");
 
             TextBox_Page.Text = "Processes";
+            currentContext = "Processes";
 
             Devices_Refresh.Visibility = Visibility.Hidden;
             Processes_Refresh.Visibility = Visibility.Visible;
@@ -111,6 +138,7 @@ namespace PrivacyHub
             Console.WriteLine("Settings Button Clicked");
 
             TextBox_Page.Text = "Settings";
+            currentContext = "Settings";
             ConfirmSelection_Button.Visibility = Visibility.Hidden;
 
             DeviceID_LB.Items.Clear();
@@ -121,6 +149,7 @@ namespace PrivacyHub
             Console.WriteLine("Select Devices Button Clicked");
 
             TextBox_Page.Text = "Select Devices";
+            currentContext = "Select Devices";
 
             DeviceID_LB.Items.Clear();
 
