@@ -28,6 +28,12 @@ namespace PrivacyHub.WindowsDeviceFetcherPackage
 
                 foreach (var usbDevice in devices)
                 {
+                    //Ignore Bluetooth devices (add Bluetooth compatibility later perhaps)
+                    if (usbDevice.GetPropertyValue("PNPClass") == null)
+                    {
+                        continue;
+                    }
+
                     String pnpClass = usbDevice.GetPropertyValue("PNPClass").ToString();
                     if (pnpClass.Equals("AudioEndpoint") || pnpClass.Equals("MEDIA") || pnpClass.Equals("Image") || pnpClass.Equals("Camera"))
                     {
