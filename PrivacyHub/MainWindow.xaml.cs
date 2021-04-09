@@ -17,6 +17,7 @@ using System.IO;
 using System.Diagnostics;
 using PrivacyHub.WindowsDeviceFetcherPackage;
 using System.Timers;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace PrivacyHub
 {
@@ -29,7 +30,8 @@ namespace PrivacyHub
         List<CheckBox> checkBoxes;
         DeviceFetcher deviceFetcher = new WindowsWebcamAndMicrophoneFetcher();
         List<Process> processList;
-        List<ProcessAndDevices> processFiles;
+        List<ProcessAndDevices> currentProcessFiles;
+        List<ProcessAndDevices> previousProcessFiles;
         private static Timer timer;
         String currentContext;
 
@@ -38,6 +40,7 @@ namespace PrivacyHub
             InitializeComponent();
 
             deviceList = deviceFetcher.getAllDevices();
+            currentProcessFiles = new List<ProcessAndDevices>();
             checkBoxes = new List<CheckBox>();
 
             timer = new Timer();
@@ -67,11 +70,42 @@ namespace PrivacyHub
             }
         }
 
+        private void NotifyOfNewItems(List<ProcessAndDevices> currentProcessFiles, List<ProcessAndDevices> previousProcessFiles)
+        {
+            Console.WriteLine("currentProcessFiles: " + currentProcessFiles.ToString());
+            Console.WriteLine("previousProcessFiles: " + previousProcessFiles.ToString());
+            if (!currentProcessFiles.Equals(previousProcessFiles))
+            {
+                Console.WriteLine("lists are different");
+                List<ProcessAndDevices> newProcessFiles = currentProcessFiles.Except(previousProcessFiles).ToList();
+
+                foreach (ProcessAndDevices processFile in newProcessFiles)
+                {
+                    String newProcess = processFile.processName;
+                    List<Device> newDevices = processFile.devices;
+
+                    foreach (Device device in newDevices)
+                    {
+                        /*new ToastContentBuilder()
+                        .AddText(newProcess + " has started using " + device.Name + ".")
+                        .Show();*/
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Lists are the same");
+            }
+        }
+
         private void ConnectProcessesAndDevices()
         {
             ProcessUtility processUtility = new WindowsProcessUtility();
             processList = System.Diagnostics.Process.GetProcesses().ToList();
-            processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+            previousProcessFiles = currentProcessFiles;
+            currentProcessFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+
+            NotifyOfNewItems(currentProcessFiles, previousProcessFiles);
         }
 
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
@@ -91,12 +125,12 @@ namespace PrivacyHub
             {
                 DeviceID_LB.Items.Add(device.Name + " is being used by the processes:");
 
-                for (int i = 0; i < processFiles.Count; i++)
+                for (int i = 0; i < currentProcessFiles.Count; i++)
                 {
-                    foreach (Device processDevice in processFiles[i].devices)
+                    foreach (Device processDevice in currentProcessFiles[i].devices)
                     {
                         if (String.Compare(device.Name, processDevice.Name) == 0)
-                            DeviceID_LB.Items.Add("     " + processFiles[i].processName);
+                            DeviceID_LB.Items.Add("     " + currentProcessFiles[i].processName);
                     }
                     
                 }
@@ -119,16 +153,16 @@ namespace PrivacyHub
 
             ConnectProcessesAndDevices();
 
-            for (int i = 0; i < processFiles.Count; i++)
+            for (int i = 0; i < currentProcessFiles.Count; i++)
             {
                 /*
-                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (Device device in processFiles[i].devices)
+                Console.WriteLine("\n\nProcess name: " + currentProcessFiles[i].processName + " Devices: ");
+                foreach (Device device in currentProcessFiles[i].devices)
                     Console.WriteLine(device.Name);
                 */
 
-                DeviceID_LB.Items.Add(processFiles[i].processName + " is using the devices:");
-                foreach (Device device in processFiles[i].devices)
+                DeviceID_LB.Items.Add(currentProcessFiles[i].processName + " is using the devices:");
+                foreach (Device device in currentProcessFiles[i].devices)
                     DeviceID_LB.Items.Add("     " + device.Name);
             }
         }
