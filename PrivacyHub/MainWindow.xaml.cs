@@ -200,29 +200,23 @@ namespace PrivacyHub
 
             List<String> trustedProcesses = new List<String>();
 
-            int i = 0;
-
             foreach (CheckBox checkBox in checkBoxes)
             {
                 if ((bool)checkBox.IsChecked)
                 {
-                    i++;
                     trustedProcesses.Add((String)checkBox.Tag);
                 }
             }
 
-            if(i != 0)
-            {
-                string[] trustedProcessNames = trustedProcesses.ToArray();
-                WriteProcessesToFile(trustedProcessNames);
-            }
-            
-        }
+            string[] trustedProcessNames = trustedProcesses.ToArray();
 
-        private void WriteProcessesToFile(string[] trustedProcessNames)
-        {
-            File.WriteAllLines("TrustedProcesses.txt", trustedProcessNames);
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
+
+            Console.WriteLine(path);
+
+            File.WriteAllLines(path, trustedProcessNames);
             Console.WriteLine("Trusted processes written");
+            
         }
 
         private void TrustedProcesses_Click(object sender, RoutedEventArgs e)
