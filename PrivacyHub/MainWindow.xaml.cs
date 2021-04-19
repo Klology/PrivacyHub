@@ -211,11 +211,9 @@ namespace PrivacyHub
             string[] trustedProcessNames = trustedProcesses.ToArray();
 
             string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
-
-            Console.WriteLine(path);
-
+            
+            File.WriteAllText(path, String.Empty);
             File.WriteAllLines(path, trustedProcessNames);
-            Console.WriteLine("Trusted processes written");
             
         }
 
@@ -223,6 +221,7 @@ namespace PrivacyHub
         {
             Console.WriteLine("TrustedProcesses clicked!\n");
             DeviceID_LB.Items.Clear();
+            checkBoxes.Clear();
             TextBox_Page.Text = "Trusted Processes";
             currentContext = "Trusted Processes";
 
@@ -232,13 +231,24 @@ namespace PrivacyHub
 
             ConnectProcessesAndDevices();
 
-            for(int i = 0; i < processFiles.Count; i++)
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
+            string[] fileLines = File.ReadAllLines(path);
+
+            for (int i = 0; i < processFiles.Count; i++)
             {
                 CheckBox checkBox = new CheckBox();
                 checkBox.Content = processFiles[i].processName;
                 checkBox.Tag = processFiles[i].processName;
                 checkBox.IsChecked = false;
+                
+                foreach(string processFileName in fileLines)
+                {
+                    Console.WriteLine("processFileName: " + processFileName + " processFiles[" + i + "].processName: " + processFiles[i].processName);
 
+                    if (String.Compare(processFileName, processFiles[i].processName) == 0)
+                        checkBox.IsChecked = true;
+                }
+                
                 checkBoxes.Add(checkBox);
 
                 DeviceID_LB.Items.Add(checkBox);
