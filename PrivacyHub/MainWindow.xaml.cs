@@ -40,7 +40,6 @@ namespace PrivacyHub
             InitializeComponent();
 
             deviceList = deviceFetcher.getAllDevices();
-            currentProcessFiles = new List<ProcessAndDevices>();
             checkBoxes = new List<CheckBox>();
 
             timer = new Timer();
@@ -72,29 +71,28 @@ namespace PrivacyHub
 
         private void NotifyOfNewItems(List<ProcessAndDevices> currentProcessFiles, List<ProcessAndDevices> previousProcessFiles)
         {
-            Console.WriteLine("currentProcessFiles: " + currentProcessFiles.ToString());
-            Console.WriteLine("previousProcessFiles: " + previousProcessFiles.ToString());
-            if (!currentProcessFiles.Equals(previousProcessFiles))
+            if (!currentProcessFiles.Equals(previousProcessFiles) && previousProcessFiles != null)
             {
-                Console.WriteLine("lists are different");
                 List<ProcessAndDevices> newProcessFiles = currentProcessFiles.Except(previousProcessFiles).ToList();
 
                 foreach (ProcessAndDevices processFile in newProcessFiles)
                 {
+                    /*Console.WriteLine("new process file PROCESSES:");
+                    Console.WriteLine(processFile.processName);*/
+
                     String newProcess = processFile.processName;
                     List<Device> newDevices = processFile.devices;
 
                     foreach (Device device in newDevices)
                     {
-                        /*new ToastContentBuilder()
+                        /*Console.WriteLine("new process file DEVICES");
+                        Console.WriteLine(device.Name);*/
+
+                        new ToastContentBuilder()
                         .AddText(newProcess + " has started using " + device.Name + ".")
-                        .Show();*/
+                        .Show();
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Lists are the same");
             }
         }
 
