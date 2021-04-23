@@ -254,18 +254,18 @@ namespace PrivacyHub
             string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
             string[] fileLines = File.ReadAllLines(path);
 
-            for (int i = 0; i < processFiles.Count; i++)
+            for (int i = 0; i < currentProcessFiles.Count; i++)
             {
                 CheckBox checkBox = new CheckBox();
-                checkBox.Content = processFiles[i].processName;
-                checkBox.Tag = processFiles[i].processName;
+                checkBox.Content = currentProcessFiles[i].processName;
+                checkBox.Tag = currentProcessFiles[i].processName;
                 checkBox.IsChecked = false;
                 
                 foreach(string processFileName in fileLines)
                 {
-                    Console.WriteLine("processFileName: " + processFileName + " processFiles[" + i + "].processName: " + processFiles[i].processName);
+                    Console.WriteLine("processFileName: " + processFileName + " currentProcessFiles[" + i + "].processName: " + currentProcessFiles[i].processName);
 
-                    if (String.Compare(processFileName, processFiles[i].processName) == 0)
+                    if (String.Compare(processFileName, currentProcessFiles[i].processName) == 0)
                         checkBox.IsChecked = true;
                 }
                 
