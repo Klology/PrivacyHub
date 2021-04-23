@@ -18,6 +18,7 @@
         <Button Content="Confirm Selection" HorizontalAlignment="Left" Margin="636,333,0,0" VerticalAlignment="Top"  Visibility="Hidden" Width="115" Click="ConfirmSelection_Click" x:Name="ConfirmSelection_Button" Height="40"/>
         <Button Content="Refresh" HorizontalAlignment="Left" Margin="636,333,0,0" VerticalAlignment="Top"  Visibility="Hidden" Width="115" Click="DeviceButtonClicked" x:Name="Devices_Refresh" Height="40"/>
         <Button Content="Refresh" HorizontalAlignment="Left" Margin="636,333,0,0" VerticalAlignment="Top"  Visibility="Hidden" Width="115" Click="ProcessButtonClicked" x:Name="Processes_Refresh" Height="40"/>
+        <Button Content="Trusted&#xa;Process" HorizontalAlignment="Left" Margin="28,218,0,0" VerticalAlignment="Top" Width="60" Height="60" RenderTransformOrigin="0.512,1.319" Click="TrustedProcesses_Click"/>
 
     </Grid>
 </Window>

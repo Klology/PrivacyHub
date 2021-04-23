@@ -63,7 +63,7 @@ public class WindowsProcessUtility : ProcessUtility
             //Console.WriteLine(process.ProcessName);
 
             //Only worry about this if you want to check for a specific process's handles     //
-            if (!process.ProcessName.Equals("scvhost"))
+            if (!process.ProcessName.Equals("svchost") || !process.ProcessName.Equals("devenv"))
             {
                 ProcessAndDevices curProccessAndDevices = new ProcessAndDevices();
                 curProccessAndDevices.processName = process.ProcessName;
@@ -152,6 +152,7 @@ public class WindowsProcessUtility : ProcessUtility
             accessMask == 0x00120189 ||
             accessMask == 0x00100000)  return IDFound;
 
+        
         try
         {
             //Set up flags for and then get a process handle for the current process being checked
