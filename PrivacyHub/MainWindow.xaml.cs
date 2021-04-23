@@ -77,17 +77,11 @@ namespace PrivacyHub
 
                 foreach (ProcessAndDevices processFile in newProcessFiles)
                 {
-                    /*Console.WriteLine("new process file PROCESSES:");
-                    Console.WriteLine(processFile.processName);*/
-
                     String newProcess = processFile.processName;
                     List<Device> newDevices = processFile.devices;
 
                     foreach (Device device in newDevices)
                     {
-                        /*Console.WriteLine("new process file DEVICES");
-                        Console.WriteLine(device.Name);*/
-
                         new ToastContentBuilder()
                         .AddText(newProcess + " has started using " + device.Name + ".")
                         .Show();
@@ -153,12 +147,6 @@ namespace PrivacyHub
 
             for (int i = 0; i < currentProcessFiles.Count; i++)
             {
-                /*
-                Console.WriteLine("\n\nProcess name: " + currentProcessFiles[i].processName + " Devices: ");
-                foreach (Device device in currentProcessFiles[i].devices)
-                    Console.WriteLine(device.Name);
-                */
-
                 DeviceID_LB.Items.Add(currentProcessFiles[i].processName + " is using the devices:");
                 foreach (Device device in currentProcessFiles[i].devices)
                     DeviceID_LB.Items.Add("     " + device.Name);
