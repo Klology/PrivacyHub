@@ -44,7 +44,7 @@ namespace PrivacyHub
 
             timer = new Timer();
             timer.Elapsed += UpdateTimer;
-            timer.Interval = 10000;
+            timer.Interval = 100000;
             timer.Start();
 
             DeviceButtonClicked(null, null);
@@ -74,6 +74,12 @@ namespace PrivacyHub
             if (!currentProcessFiles.Equals(previousProcessFiles) && previousProcessFiles != null)
             {
                 List<ProcessAndDevices> newProcessFiles = currentProcessFiles.Except(previousProcessFiles).ToList();
+
+                string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
+                string[] fileLines = File.ReadAllLines(path);
+
+                //Filter out fileLines from newProcessFiles
+                newProcessFiles = newProcessFiles.Where(processFile => !fileLines.Contains(processFile.processName)).ToList();
 
                 foreach (ProcessAndDevices processFile in newProcessFiles)
                 {
