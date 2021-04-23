@@ -17,6 +17,7 @@ using System.IO;
 using System.Diagnostics;
 using PrivacyHub.WindowsDeviceFetcherPackage;
 using System.Timers;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace PrivacyHub
 {
@@ -29,7 +30,8 @@ namespace PrivacyHub
         List<CheckBox> checkBoxes;
         DeviceFetcher deviceFetcher = new WindowsWebcamAndMicrophoneFetcher();
         List<Process> processList;
-        List<ProcessAndDevices> processFiles;
+        List<ProcessAndDevices> currentProcessFiles;
+        List<ProcessAndDevices> previousProcessFiles;
         private static Timer timer;
         String currentContext;
 
@@ -42,7 +44,7 @@ namespace PrivacyHub
 
             timer = new Timer();
             timer.Elapsed += UpdateTimer;
-            timer.Interval = 10000;
+            timer.Interval = 100000;
             timer.Start();
 
             DeviceButtonClicked(null, null);
@@ -67,11 +69,41 @@ namespace PrivacyHub
             }
         }
 
+        private void NotifyOfNewItems(List<ProcessAndDevices> currentProcessFiles, List<ProcessAndDevices> previousProcessFiles)
+        {
+            if (!currentProcessFiles.Equals(previousProcessFiles) && previousProcessFiles != null)
+            {
+                List<ProcessAndDevices> newProcessFiles = currentProcessFiles.Except(previousProcessFiles).ToList();
+
+                string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
+                string[] fileLines = File.ReadAllLines(path);
+
+                //Filter out fileLines from newProcessFiles
+                newProcessFiles = newProcessFiles.Where(processFile => !fileLines.Contains(processFile.processName)).ToList();
+
+                foreach (ProcessAndDevices processFile in newProcessFiles)
+                {
+                    String newProcess = processFile.processName;
+                    List<Device> newDevices = processFile.devices;
+
+                    foreach (Device device in newDevices)
+                    {
+                        new ToastContentBuilder()
+                        .AddText(newProcess + " has started using " + device.Name + ".")
+                        .Show();
+                    }
+                }
+            }
+        }
+
         private void ConnectProcessesAndDevices()
         {
             ProcessUtility processUtility = new WindowsProcessUtility();
             processList = System.Diagnostics.Process.GetProcesses().ToList();
-            processFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+            previousProcessFiles = currentProcessFiles;
+            currentProcessFiles = processUtility.GetProcessAndDevices(processList, deviceList);
+
+            NotifyOfNewItems(currentProcessFiles, previousProcessFiles);
         }
 
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
@@ -91,12 +123,12 @@ namespace PrivacyHub
             {
                 DeviceID_LB.Items.Add(device.Name + " is being used by the processes:");
 
-                for (int i = 0; i < processFiles.Count; i++)
+                for (int i = 0; i < currentProcessFiles.Count; i++)
                 {
-                    foreach (Device processDevice in processFiles[i].devices)
+                    foreach (Device processDevice in currentProcessFiles[i].devices)
                     {
                         if (String.Compare(device.Name, processDevice.Name) == 0)
-                            DeviceID_LB.Items.Add("     " + processFiles[i].processName);
+                            DeviceID_LB.Items.Add("     " + currentProcessFiles[i].processName);
                     }
                     
                 }
@@ -119,16 +151,10 @@ namespace PrivacyHub
 
             ConnectProcessesAndDevices();
 
-            for (int i = 0; i < processFiles.Count; i++)
+            for (int i = 0; i < currentProcessFiles.Count; i++)
             {
-                /*
-                Console.WriteLine("\n\nProcess name: " + processFiles[i].processName + " Devices: ");
-                foreach (Device device in processFiles[i].devices)
-                    Console.WriteLine(device.Name);
-                */
-
-                DeviceID_LB.Items.Add(processFiles[i].processName + " is using the devices:");
-                foreach (Device device in processFiles[i].devices)
+                DeviceID_LB.Items.Add(currentProcessFiles[i].processName + " is using the devices:");
+                foreach (Device device in currentProcessFiles[i].devices)
                     DeviceID_LB.Items.Add("     " + device.Name);
             }
         }
@@ -234,18 +260,18 @@ namespace PrivacyHub
             string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
             string[] fileLines = File.ReadAllLines(path);
 
-            for (int i = 0; i < processFiles.Count; i++)
+            for (int i = 0; i < currentProcessFiles.Count; i++)
             {
                 CheckBox checkBox = new CheckBox();
-                checkBox.Content = processFiles[i].processName;
-                checkBox.Tag = processFiles[i].processName;
+                checkBox.Content = currentProcessFiles[i].processName;
+                checkBox.Tag = currentProcessFiles[i].processName;
                 checkBox.IsChecked = false;
                 
                 foreach(string processFileName in fileLines)
                 {
-                    Console.WriteLine("processFileName: " + processFileName + " processFiles[" + i + "].processName: " + processFiles[i].processName);
+                    Console.WriteLine("processFileName: " + processFileName + " currentProcessFiles[" + i + "].processName: " + currentProcessFiles[i].processName);
 
-                    if (String.Compare(processFileName, processFiles[i].processName) == 0)
+                    if (String.Compare(processFileName, currentProcessFiles[i].processName) == 0)
                         checkBox.IsChecked = true;
                 }
                 

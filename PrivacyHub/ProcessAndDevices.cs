@@ -16,5 +16,23 @@ namespace PrivacyHub
             this.processName = processName;
             this.devices = devices;
         }
+
+        public override bool Equals(object obj)
+        {
+            // If the passed object is null
+            if (obj == null)
+            {
+                return false;
+            }
+            if (!(obj is ProcessAndDevices))
+            {
+                return false;
+            }
+            return (this.processName == ((ProcessAndDevices)obj).processName);
+        }
+        public override string ToString()
+        {
+            return "Process and Devices: " + processName + " " + devices.ToString();
+        }
     }
 }
