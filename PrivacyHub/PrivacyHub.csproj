@@ -63,6 +63,7 @@
     </ApplicationDefinition>
     <Compile Include="DeviceFetcher.cs" />
     <Compile Include="ProcessUtility.cs" />
+    <Compile Include="TrustedProcessesFileHandler.cs" />
     <Compile Include="WindowsDeviceFetcherPackage\WindowsWebcamAndMicrophoneFetcher.cs" />
     <Compile Include="WindowsProcessUtilityPackage\FileType.cs" />
     <Compile Include="WindowsProcessUtilityPackage\OBJECT_INFORMATION_CLASS.cs" />
@@ -125,9 +126,6 @@
     <PackageReference Include="System.Management">
       <Version>5.0.0</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="TrustedProcesses.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

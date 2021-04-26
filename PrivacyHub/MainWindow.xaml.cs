@@ -26,6 +26,7 @@ namespace PrivacyHub
     /// </summary>
     public partial class MainWindow : Window
     {
+        TrustedProcessesFileHandler trustedProcesses = new TrustedProcessesFileHandler();
         List<Device> deviceList;
         List<CheckBox> checkBoxes;
         DeviceFetcher deviceFetcher = new WindowsWebcamAndMicrophoneFetcher();
@@ -224,22 +225,19 @@ namespace PrivacyHub
         private void UpdateTrustedProcesses()
         {
 
-            List<String> trustedProcesses = new List<String>();
+            List<String> newTrustedProcesses = new List<String>();
 
             foreach (CheckBox checkBox in checkBoxes)
             {
                 if ((bool)checkBox.IsChecked)
                 {
-                    trustedProcesses.Add((String)checkBox.Tag);
+                    newTrustedProcesses.Add((String)checkBox.Tag);
                 }
             }
 
-            string[] trustedProcessNames = trustedProcesses.ToArray();
+            trustedProcesses.TrustedProcesses = newTrustedProcesses.ToArray();
 
-            string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
-            
-            File.WriteAllText(path, String.Empty);
-            File.WriteAllLines(path, trustedProcessNames);
+            trustedProcesses.SaveTrustedProcesses();
             
         }
 
@@ -257,8 +255,6 @@ namespace PrivacyHub
 
             ConnectProcessesAndDevices();
 
-            string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
-            string[] fileLines = File.ReadAllLines(path);
 
             for (int i = 0; i < currentProcessFiles.Count; i++)
             {
@@ -267,18 +263,33 @@ namespace PrivacyHub
                 checkBox.Tag = currentProcessFiles[i].processName;
                 checkBox.IsChecked = false;
                 
-                foreach(string processFileName in fileLines)
-                {
-                    Console.WriteLine("processFileName: " + processFileName + " currentProcessFiles[" + i + "].processName: " + currentProcessFiles[i].processName);
-
-                    if (String.Compare(processFileName, currentProcessFiles[i].processName) == 0)
-                        checkBox.IsChecked = true;
-                }
-                
                 checkBoxes.Add(checkBox);
-
                 DeviceID_LB.Items.Add(checkBox);
             }
+
+            foreach (string processFileName in trustedProcesses.TrustedProcesses) {
+
+                bool used = false;
+
+                foreach (CheckBox checkBox in checkBoxes) {
+                    if (processFileName.Equals(checkBox.Tag)) {
+                        checkBox.IsChecked = true;
+                        used = true;
+                        break;
+                    }
+                }
+
+                if(!used) {
+                    CheckBox checkBox = new CheckBox();
+                    checkBox.Content = processFileName;
+                    checkBox.Tag = processFileName;
+                    checkBox.IsChecked = true;
+
+                    checkBoxes.Add(checkBox);
+                    DeviceID_LB.Items.Add(checkBox);
+                }
+            }
+
         }
     }
 }
