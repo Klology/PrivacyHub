@@ -31,4 +31,11 @@ Both of these screens let you monitor what processes are using your selected dev
 ### Refreshing
 The screens automatically refresh every so often, but you can manually refresh them with the "Refresh" button, if you desire.
 
-![The refresh button](https://i.ibb.co/yN0yQJ9/image.png)
+![The Refresh button](https://i.ibb.co/yN0yQJ9/image.png)
+
+## Trusted Processes
+If there is a process that you don't want notifications for, you can add it to your Trusted Processes list.
+
+![The Trusted Processes screen](https://i.ibb.co/YdkKxn5/image.png)
+
+Any processes that have accessed your devices while running Privacy Hub will appear here. Select the processes you want to trust, and then click "Confirm Selection." Trusted processes will not trigger notifications when they start using your device, but they will still appear on the Devices and Processes screens.
