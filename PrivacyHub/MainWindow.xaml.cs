@@ -109,14 +109,7 @@ namespace PrivacyHub
 
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Device Button Clicked");
-            DeviceID_LB.Items.Clear();
-            TextBox_Page.Text = "Devices";
-            currentContext = "Devices";
-
-            Devices_Refresh.Visibility = Visibility.Visible;
-            Processes_Refresh.Visibility = Visibility.Hidden;
-            ConfirmSelection_Button.Visibility = Visibility.Hidden;
+            GUINewContext("Devices");
 
             ConnectProcessesAndDevices();
 
@@ -139,16 +132,8 @@ namespace PrivacyHub
 
         private void ProcessButtonClicked(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Process Button Clicked");
 
-            TextBox_Page.Text = "Processes";
-            currentContext = "Processes";
-
-            Devices_Refresh.Visibility = Visibility.Hidden;
-            Processes_Refresh.Visibility = Visibility.Visible;
-            ConfirmSelection_Button.Visibility = Visibility.Hidden;
-
-            DeviceID_LB.Items.Clear();
+            GUINewContext("Processes");
 
             ConnectProcessesAndDevices();
 
@@ -162,27 +147,14 @@ namespace PrivacyHub
 
         private void SettingsButtonClicked(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Settings Button Clicked");
-
-            TextBox_Page.Text = "Settings";
-            currentContext = "Settings";
-            ConfirmSelection_Button.Visibility = Visibility.Hidden;
-
-            DeviceID_LB.Items.Clear();
+            GUINewContext("Settings");
         }
 
         private void SelectDevicesButton(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Select Devices Button Clicked");
-
-            TextBox_Page.Text = "Select Devices";
-            currentContext = "Select Devices";
-
-            DeviceID_LB.Items.Clear();
+            GUINewContext("Select Devices");
 
             deviceList = deviceFetcher.getAllDevices();
-
-            checkBoxes.Clear();
 
             foreach (Device device in deviceList)
             {
@@ -195,10 +167,6 @@ namespace PrivacyHub
 
                 DeviceID_LB.Items.Add(checkBox);
             }
-
-            Devices_Refresh.Visibility = Visibility.Hidden;
-            Processes_Refresh.Visibility = Visibility.Hidden;
-            ConfirmSelection_Button.Visibility = Visibility.Visible;
         }
 
         private void ConfirmSelection_Click(object sender, RoutedEventArgs e)
@@ -243,15 +211,8 @@ namespace PrivacyHub
 
         private void TrustedProcesses_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("TrustedProcesses clicked!\n");
-            DeviceID_LB.Items.Clear();
-            checkBoxes.Clear();
-            TextBox_Page.Text = "Trusted Processes";
-            currentContext = "Trusted Processes";
 
-            Devices_Refresh.Visibility = Visibility.Hidden;
-            Processes_Refresh.Visibility = Visibility.Hidden;
-            ConfirmSelection_Button.Visibility = Visibility.Visible;
+            GUINewContext("Trusted Processes");
 
             ConnectProcessesAndDevices();
 
@@ -290,6 +251,26 @@ namespace PrivacyHub
                 }
             }
 
+        }
+
+        private void GUINewContext(string newContext)
+        {
+            TextBox_Page.Text = newContext;
+            currentContext = newContext;
+
+            DeviceID_LB.Items.Clear();
+            checkBoxes.Clear();
+
+            Devices_Refresh.Visibility = Visibility.Hidden;
+            Processes_Refresh.Visibility = Visibility.Hidden;
+            ConfirmSelection_Button.Visibility = Visibility.Hidden;
+
+            if (String.Compare("Devices", currentContext) == 0)
+                Devices_Refresh.Visibility = Visibility.Visible;
+            else if (String.Compare("Processes", currentContext) == 0)
+                Processes_Refresh.Visibility = Visibility.Visible;
+            else if (String.Compare("Trusted Processes", currentContext) == 0 || String.Compare("Select Devices", currentContext) == 0)
+                ConfirmSelection_Button.Visibility = Visibility.Visible;
         }
     }
 }
