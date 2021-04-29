@@ -28,6 +28,13 @@ Privacy Hub has two main views.
 
 Both of these screens let you monitor what processes are using your selected devices. If a process is accessing your device in any way, it will display on these screens. This does not mean the processes are actively using them -- it simply means that they currently have access to them. 
 
+### Notifications
+Whenever a process begins accessing a selected device, Privacy Hub will send you a Windows notification about it.
+
+![An example notification](https://i.ibb.co/Dk5Z4Tj/image.png)
+
+To disable these notifications for a process, add the process to your Trusted Processes list.
+
 ### Refreshing
 The screens automatically refresh every so often, but you can manually refresh them with the "Refresh" button, if you desire.
 
