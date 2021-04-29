@@ -38,4 +38,4 @@ If there is a process that you don't want notifications for, you can add it to y
 
 ![The Trusted Processes screen](https://i.ibb.co/YdkKxn5/image.png)
 
-Any processes that have accessed your devices while running Privacy Hub will appear here. Select the processes you want to trust, and then click "Confirm Selection." Trusted processes will not trigger notifications when they start using your device, but they will still appear on the Devices and Processes screens.
+Any processes that currently appear on the Devices and Processes screens will appear here. Select the processes you want to trust, and then click "Confirm Selection." Trusted processes will not trigger notifications when they start using your device, but they will still appear on the Devices and Processes screens.
