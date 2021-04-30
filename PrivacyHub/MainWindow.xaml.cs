@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Management;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
 using PrivacyHub.WindowsDeviceFetcherPackage;
@@ -26,6 +16,7 @@ namespace PrivacyHub
     /// </summary>
     public partial class MainWindow : Window
     {
+        TrustedProcessesFileHandler trustedProcesses = new TrustedProcessesFileHandler();
         List<Device> deviceList;
         List<CheckBox> checkBoxes;
         DeviceFetcher deviceFetcher = new WindowsWebcamAndMicrophoneFetcher();
@@ -108,14 +99,7 @@ namespace PrivacyHub
 
         private void DeviceButtonClicked(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Device Button Clicked");
-            DeviceID_LB.Items.Clear();
-            TextBox_Page.Text = "Devices";
-            currentContext = "Devices";
-
-            Devices_Refresh.Visibility = Visibility.Visible;
-            Processes_Refresh.Visibility = Visibility.Hidden;
-            ConfirmSelection_Button.Visibility = Visibility.Hidden;
+            GUINewContext("Devices");
 
             ConnectProcessesAndDevices();
 
@@ -138,16 +122,8 @@ namespace PrivacyHub
 
         private void ProcessButtonClicked(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Process Button Clicked");
 
-            TextBox_Page.Text = "Processes";
-            currentContext = "Processes";
-
-            Devices_Refresh.Visibility = Visibility.Hidden;
-            Processes_Refresh.Visibility = Visibility.Visible;
-            ConfirmSelection_Button.Visibility = Visibility.Hidden;
-
-            DeviceID_LB.Items.Clear();
+            GUINewContext("Processes");
 
             ConnectProcessesAndDevices();
 
@@ -161,27 +137,14 @@ namespace PrivacyHub
 
         private void SettingsButtonClicked(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Settings Button Clicked");
-
-            TextBox_Page.Text = "Settings";
-            currentContext = "Settings";
-            ConfirmSelection_Button.Visibility = Visibility.Hidden;
-
-            DeviceID_LB.Items.Clear();
+            GUINewContext("Settings");
         }
 
         private void SelectDevicesButton(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Select Devices Button Clicked");
-
-            TextBox_Page.Text = "Select Devices";
-            currentContext = "Select Devices";
-
-            DeviceID_LB.Items.Clear();
+            GUINewContext("Select Devices");
 
             deviceList = deviceFetcher.getAllDevices();
-
-            checkBoxes.Clear();
 
             foreach (Device device in deviceList)
             {
@@ -194,10 +157,6 @@ namespace PrivacyHub
 
                 DeviceID_LB.Items.Add(checkBox);
             }
-
-            Devices_Refresh.Visibility = Visibility.Hidden;
-            Processes_Refresh.Visibility = Visibility.Hidden;
-            ConfirmSelection_Button.Visibility = Visibility.Visible;
         }
 
         private void ConfirmSelection_Click(object sender, RoutedEventArgs e)
@@ -217,48 +176,34 @@ namespace PrivacyHub
                 if ((bool)checkBox.IsChecked)
                     deviceList.Add((Device)checkBox.Tag);
             }
-
-            Console.WriteLine("searchableSubstrings Updated");
         }
 
         private void UpdateTrustedProcesses()
         {
 
-            List<String> trustedProcesses = new List<String>();
+            List<String> newTrustedProcesses = new List<String>();
 
             foreach (CheckBox checkBox in checkBoxes)
             {
                 if ((bool)checkBox.IsChecked)
                 {
-                    trustedProcesses.Add((String)checkBox.Tag);
+                    newTrustedProcesses.Add((String)checkBox.Tag);
                 }
             }
 
-            string[] trustedProcessNames = trustedProcesses.ToArray();
+            trustedProcesses.TrustedProcesses = newTrustedProcesses.ToArray();
 
-            string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
-            
-            File.WriteAllText(path, String.Empty);
-            File.WriteAllLines(path, trustedProcessNames);
+            trustedProcesses.SaveTrustedProcesses();
             
         }
 
         private void TrustedProcesses_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("TrustedProcesses clicked!\n");
-            DeviceID_LB.Items.Clear();
-            checkBoxes.Clear();
-            TextBox_Page.Text = "Trusted Processes";
-            currentContext = "Trusted Processes";
 
-            Devices_Refresh.Visibility = Visibility.Hidden;
-            Processes_Refresh.Visibility = Visibility.Hidden;
-            ConfirmSelection_Button.Visibility = Visibility.Visible;
+            GUINewContext("Trusted Processes");
 
             ConnectProcessesAndDevices();
 
-            string path = System.IO.Path.Combine(Environment.CurrentDirectory, @"../../TrustedProcesses.txt");
-            string[] fileLines = File.ReadAllLines(path);
 
             for (int i = 0; i < currentProcessFiles.Count; i++)
             {
@@ -267,18 +212,53 @@ namespace PrivacyHub
                 checkBox.Tag = currentProcessFiles[i].processName;
                 checkBox.IsChecked = false;
                 
-                foreach(string processFileName in fileLines)
-                {
-                    Console.WriteLine("processFileName: " + processFileName + " currentProcessFiles[" + i + "].processName: " + currentProcessFiles[i].processName);
-
-                    if (String.Compare(processFileName, currentProcessFiles[i].processName) == 0)
-                        checkBox.IsChecked = true;
-                }
-                
                 checkBoxes.Add(checkBox);
-
                 DeviceID_LB.Items.Add(checkBox);
             }
+
+            foreach (string processFileName in trustedProcesses.TrustedProcesses) {
+
+                bool used = false;
+
+                foreach (CheckBox checkBox in checkBoxes) {
+                    if (processFileName.Equals(checkBox.Tag)) {
+                        checkBox.IsChecked = true;
+                        used = true;
+                        break;
+                    }
+                }
+
+                if(!used) {
+                    CheckBox checkBox = new CheckBox();
+                    checkBox.Content = processFileName;
+                    checkBox.Tag = processFileName;
+                    checkBox.IsChecked = true;
+
+                    checkBoxes.Add(checkBox);
+                    DeviceID_LB.Items.Add(checkBox);
+                }
+            }
+
+        }
+
+        private void GUINewContext(string newContext)
+        {
+            TextBox_Page.Text = newContext;
+            currentContext = newContext;
+
+            DeviceID_LB.Items.Clear();
+            checkBoxes.Clear();
+
+            Devices_Refresh.Visibility = Visibility.Hidden;
+            Processes_Refresh.Visibility = Visibility.Hidden;
+            ConfirmSelection_Button.Visibility = Visibility.Hidden;
+
+            if (String.Compare("Devices", currentContext) == 0)
+                Devices_Refresh.Visibility = Visibility.Visible;
+            else if (String.Compare("Processes", currentContext) == 0)
+                Processes_Refresh.Visibility = Visibility.Visible;
+            else if (String.Compare("Trusted Processes", currentContext) == 0 || String.Compare("Select Devices", currentContext) == 0)
+                ConfirmSelection_Button.Visibility = Visibility.Visible;
         }
     }
 }
