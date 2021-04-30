@@ -176,8 +176,6 @@ namespace PrivacyHub
                 if ((bool)checkBox.IsChecked)
                     deviceList.Add((Device)checkBox.Tag);
             }
-
-            Console.WriteLine("searchableSubstrings Updated");
         }
 
         private void UpdateTrustedProcesses()
