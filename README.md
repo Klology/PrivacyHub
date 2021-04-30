@@ -3,6 +3,11 @@ Privacy Hub is a Windows app that lets you track which of your computer's proces
 
 ***Right now, Privacy Hub only monitors webcams and microphones. Functionality for other USB devices will be added in the future.***
 
+# Submission Structure
+**NCCC Final Report.docx** - 1. Project Report
+**README.md (this document)** - 2. Manuals
+**This GitHub repo** - 3. Code
+
 # Installation
 * TYPE LATER *
 
