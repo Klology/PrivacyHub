@@ -11,7 +11,7 @@ Privacy Hub is a Windows app that lets you track which of your computer's proces
 **This GitHub repo** - 3. Code
 
 # Installation
-* TYPE LATER *
+Go to our [Releases](https://github.com/Klology/PrivacyHub/releases) page and download the latest .zip file from there. Inside of that .zip file, open PrivacyHub.exe.
 
 # How to Use
 ## Selecting Devices
