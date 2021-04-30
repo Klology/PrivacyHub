@@ -5,7 +5,9 @@ Privacy Hub is a Windows app that lets you track which of your computer's proces
 
 # Submission Structure
 **NCCC Final Report.docx** - 1. Project Report
+
 **README.md (this document)** - 2. Manuals
+
 **This GitHub repo** - 3. Code
 
 # Installation
